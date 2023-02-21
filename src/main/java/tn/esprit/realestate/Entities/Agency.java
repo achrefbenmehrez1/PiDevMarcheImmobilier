@@ -1,5 +1,6 @@
 package tn.esprit.realestate.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,6 @@ import java.util.List;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
 @Slf4j
 @Getter
 @Setter
@@ -32,6 +31,7 @@ public class Agency {
 
     private String logo;
 
-    @OneToMany(mappedBy = "agency")
+    @OneToMany(mappedBy = "agency", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<User> agents;
 }

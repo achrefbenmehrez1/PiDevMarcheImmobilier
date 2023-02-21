@@ -9,7 +9,9 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    @Query("select a from Appointment a where a.agent.id = ?1 or a.client.id = ?1")
-    List<Appointment> findByAgent_IdOrClient_Id(Long id);
+    @Query("SELECT a FROM Appointment a WHERE a.agent.id = ?1")
+    List<Appointment> getAllAppointmentsByAgentId(long userId);
 
+    @Query("SELECT a FROM Appointment a WHERE a.client.id = ?1")
+    List<Appointment> getAllAppointmentsByClientId(long userId);
 }

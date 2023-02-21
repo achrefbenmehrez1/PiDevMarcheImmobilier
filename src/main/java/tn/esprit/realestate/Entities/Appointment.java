@@ -11,7 +11,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 @Slf4j
 @Getter
 @Setter

@@ -2,6 +2,7 @@ package tn.esprit.realestate.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.realestate.Dto.AddAppointmentResponse;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.IServices.IAppointmentService;
 
@@ -17,13 +18,8 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    @GetMapping
-    public String getAllAppointments() {
-        return "test";
-    }
-
     @PostMapping("/{propertyId}/{agentId}/{clientId}")
-    public Appointment addAppointment(@RequestBody Appointment appointment, @PathVariable long propertyId, @PathVariable long agentId, @PathVariable long clientId) {
+    public AddAppointmentResponse addAppointment(@RequestBody Appointment appointment, @PathVariable long propertyId, @PathVariable long agentId, @PathVariable long clientId) {
         return appointmentService.addAppointment(appointment, propertyId, agentId, clientId);
     }
 
@@ -32,9 +28,14 @@ public class AppointmentController {
         return appointmentService.updateAppointment(appointment);
     }
 
-    @GetMapping("/all/{userid}")
+    @GetMapping("/agent/{userid}")
     public List<Appointment> getAllAppointmentsByAgentId(@PathVariable long userid) {
-        return appointmentService.getAllAppointments(userid);
+        return appointmentService.getAgentAppointments(userid);
+    }
+
+    @GetMapping("/client/{userid}")
+    public List<Appointment> getAllAppointmentsByClientId(@PathVariable long userid) {
+        return appointmentService.getClientAppointments(userid);
     }
 
     @DeleteMapping("/{id}")
