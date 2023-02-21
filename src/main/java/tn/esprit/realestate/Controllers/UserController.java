@@ -12,7 +12,7 @@ import tn.esprit.realestate.Dto.RegisterRequest;
 import tn.esprit.realestate.Services.User.AuthenticationService;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class UserController {
 
     private final AuthenticationService service;
