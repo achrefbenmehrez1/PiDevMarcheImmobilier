@@ -1,4 +1,4 @@
-package tn.esprit.marcheimmobilier;
+package tn.esprit.realestate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
