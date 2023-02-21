@@ -27,7 +27,7 @@ public class AppointmentController {
         return appointmentService.addAppointment(appointment, propertyId, agentId, clientId);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public Appointment updateAppointment(@RequestBody Appointment appointment) {
         return appointmentService.updateAppointment(appointment);
     }
