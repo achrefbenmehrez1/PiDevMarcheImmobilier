@@ -25,8 +25,8 @@ public class Chat {
     private Date date;
 
     @ManyToOne
-    private AppUser sender;
+    private User sender;
 
     @ManyToOne
-    private AppUser receiver;
+    private User receiver;
 }

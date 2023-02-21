@@ -27,7 +27,7 @@ public class Advertisement {
     @ManyToOne
     private Property property;
     @ManyToOne
-    private AppUser user;
+    private User user;
     @OneToOne
     private Agreement agreement;
 }
