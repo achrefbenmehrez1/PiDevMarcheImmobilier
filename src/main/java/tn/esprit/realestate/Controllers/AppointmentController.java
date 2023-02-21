@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Services.Appointment.IAppointmentService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
