@@ -30,7 +30,7 @@ public class AppUserService implements UserDetailsService {
                 new UsernameNotFoundException(username).getMessage());
         return new User(appUser.getUsername()
                 , appUser.getPassword()
-                , getAuthorities(Objects.requireNonNull(appUser.getRole())));
+                , getAuthorities(Objects.requireNonNull(appUser.getRoles().stream().findFirst().orElse(null))));
     }
 
     private List<GrantedAuthority> getAuthorities(Role userRole) {
