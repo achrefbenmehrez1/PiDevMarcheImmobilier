@@ -1,10 +1,10 @@
-package tn.esprit.realestate;
+package tn.esprit.marcheimmobilier;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RealEstateApplicationTests {
+class MarcheImmobilierApplicationTests {
 
     @Test
     void contextLoads() {
