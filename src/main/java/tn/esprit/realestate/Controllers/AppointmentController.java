@@ -10,16 +10,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/appointments")
 public class AppointmentController {
-    private IAppointmentService appointmentService;
+    private final IAppointmentService appointmentService;
 
     @Autowired
     public AppointmentController(IAppointmentService appointmentService) {
         this.appointmentService = appointmentService;
-    }
-
-    @GetMapping
-    public String getAllAppointments() {
-        return "test";
     }
 
     @PostMapping("/{propertyId}/{agentId}/{clientId}")

@@ -6,7 +6,8 @@ import tn.esprit.realestate.Entities.AppUser;
 
 import java.util.Optional;
 
-@Repository
+import java.util.Optional;
+
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     AppUser findByUsername(String username);
 
