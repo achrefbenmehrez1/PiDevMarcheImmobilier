@@ -5,11 +5,9 @@ import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Entities.AppUser;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Entities.Property;
-import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Repositories.AppUserRepository;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
 import tn.esprit.realestate.Repositories.PropertyRepository;
-import tn.esprit.realestate.Repositories.UserRepository;
 
 import java.util.List;
 
@@ -72,6 +70,6 @@ public class AppointmentService implements IAppointmentService {
 
     @Override
     public List<Appointment> getAllAppointments(long userId) {
-        return appointmentRepository.findAllByUserId(userId);
+        return appointmentRepository.findByAgent_IdOrClient_Id(userId);
     }
 }

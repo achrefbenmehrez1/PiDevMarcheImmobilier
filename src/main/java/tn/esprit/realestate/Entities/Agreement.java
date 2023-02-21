@@ -20,4 +20,13 @@ public class Agreement {
     @Column private String payment_method;
     @Column private String penalties;
     @OneToOne private Advertisement advertisement;
+
+    @ManyToOne
+    private AppUser client;
+
+    @ManyToOne
+    private AppUser agent;
+
+    @ManyToOne
+    private AppUser owner;
 }
