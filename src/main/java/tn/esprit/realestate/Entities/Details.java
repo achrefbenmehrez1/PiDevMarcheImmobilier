@@ -15,6 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 public class Details {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 }
