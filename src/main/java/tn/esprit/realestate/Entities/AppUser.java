@@ -32,8 +32,7 @@ public class AppUser implements UserDetails {
     @ManyToOne
     private Role role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
     @Override

@@ -23,7 +23,7 @@ public class Role {
     private Long id;
 
     private String name;
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role")
     @JsonIgnore
     private List<AppUser> users = new ArrayList<>();
 
