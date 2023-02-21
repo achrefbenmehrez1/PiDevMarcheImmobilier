@@ -12,7 +12,10 @@ import org.springframework.util.Assert;
 import tn.esprit.realestate.Entities.AppUser;
 import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Repositories.AppUserRepository;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

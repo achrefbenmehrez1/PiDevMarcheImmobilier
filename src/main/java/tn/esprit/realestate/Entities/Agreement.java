@@ -16,9 +16,12 @@ public class Agreement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column private String payment_method;
-    @Column private String penalties;
-    @OneToOne private Advertisement advertisement;
+    @Column
+    private String payment_method;
+    @Column
+    private String penalties;
+    @OneToOne
+    private Advertisement advertisement;
 
     @ManyToOne
     private AppUser client;

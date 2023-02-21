@@ -1,6 +1,5 @@
 package tn.esprit.realestate.Logging;
 
-import java.util.Arrays;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -10,9 +9,11 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 /**
  * Aspect for logging execution of service and repository Spring components.
- *
+ * <p>
  * By default, it only runs with the "dev" profile.
  */
 @Aspect
@@ -55,7 +56,7 @@ public class LoggingAspect {
      * Advice that logs methods throwing exceptions.
      *
      * @param joinPoint join point for advice.
-     * @param e exception.
+     * @param e         exception.
      */
     @AfterThrowing(pointcut = "applicationPackagePointcut() && springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {

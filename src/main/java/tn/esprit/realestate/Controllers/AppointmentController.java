@@ -11,6 +11,7 @@ import java.util.List;
 @RequestMapping("/appointments")
 public class AppointmentController {
     private IAppointmentService appointmentService;
+
     @Autowired
     public AppointmentController(IAppointmentService appointmentService) {
         this.appointmentService = appointmentService;
@@ -25,14 +26,17 @@ public class AppointmentController {
     public Appointment addAppointment(@RequestBody Appointment appointment, @PathVariable long propertyId, @PathVariable long agentId, @PathVariable long clientId) {
         return appointmentService.addAppointment(appointment, propertyId, agentId, clientId);
     }
+
     @PutMapping
     public Appointment updateAppointment(@RequestBody Appointment appointment) {
         return appointmentService.updateAppointment(appointment);
     }
+
     @GetMapping("/all/{userid}")
     public List<Appointment> getAllAppointmentsByAgentId(@PathVariable long userid) {
         return appointmentService.getAllAppointments(userid);
     }
+
     @DeleteMapping("/{id}")
     public boolean deleteAppointment(@PathVariable long id) {
         return appointmentService.deleteAppointment(appointmentService.getAppointmentById(id));

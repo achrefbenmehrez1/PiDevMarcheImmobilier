@@ -5,9 +5,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.*;
-
-import static jakarta.persistence.FetchType.EAGER;
+import java.util.List;
 
 @Entity
 @Table
@@ -25,7 +23,7 @@ public class Role {
     private Long id;
 
     private String name;
-@ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles")
     private List<AppUser> users = new ArrayList<>();
 
     public Role(String name) {
