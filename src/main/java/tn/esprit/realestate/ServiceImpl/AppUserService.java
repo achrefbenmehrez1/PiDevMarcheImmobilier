@@ -12,7 +12,10 @@ import org.springframework.util.Assert;
 import tn.esprit.realestate.Entities.AppUser;
 import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Repositories.AppUserRepository;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class AppUserService implements UserDetailsService {
                 new UsernameNotFoundException(username).getMessage());
         return new User(appUser.getUsername()
                 , appUser.getPassword()
-                , getAuthorities(Objects.requireNonNull(appUser.getRoles().stream().findFirst().orElse(null))));
+                , getAuthorities(Objects.requireNonNull(appUser.getRole())));
     }
 
     private List<GrantedAuthority> getAuthorities(Role userRole) {

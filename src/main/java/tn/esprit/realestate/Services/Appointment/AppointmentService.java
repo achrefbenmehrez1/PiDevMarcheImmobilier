@@ -23,6 +23,7 @@ public class AppointmentService implements IAppointmentService {
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
     }
+
     @Override
     public Appointment addAppointment(Appointment appointment, long propertyId, long agentId, long clientId) {
         Property property = propertyRepository.findById(propertyId).orElse(null);
@@ -55,7 +56,7 @@ public class AppointmentService implements IAppointmentService {
 
     @Override
     public boolean deleteAppointment(Appointment appointment) {
-        if(appointment.getId() == null)
+        if (appointment.getId() == null)
             return false;
         else {
             appointmentRepository.delete(appointment);

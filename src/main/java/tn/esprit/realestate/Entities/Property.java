@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 @Slf4j
 @Getter
 @Setter
@@ -17,7 +16,8 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column private double size;
+    @Column
+    private double size;
     @Column
     @Enumerated(EnumType.STRING)
     private Type type;

@@ -5,9 +5,13 @@ import tn.esprit.realestate.Entities.Appointment;
 import java.util.List;
 
 public interface IAppointmentService {
-    public Appointment addAppointment(Appointment appointment, long propertyId, long agentId, long clientId);
-    public Appointment updateAppointment(Appointment appointment);
-    public boolean deleteAppointment(Appointment appointment);
-    public Appointment getAppointmentById(long id);
-    public List<Appointment> getAllAppointments(long userId);
+    Appointment addAppointment(Appointment appointment, long propertyId, long agentId, long clientId);
+
+    Appointment updateAppointment(Appointment appointment);
+
+    boolean deleteAppointment(Appointment appointment);
+
+    Appointment getAppointmentById(long id);
+
+    List<Appointment> getAllAppointments(long userId);
 }
