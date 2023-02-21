@@ -33,5 +33,5 @@ public class Agency {
     private String logo;
 
     @OneToMany(mappedBy = "agency")
-    private List<AppUser> agents;
+    private List<User> agents;
 }

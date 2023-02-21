@@ -26,5 +26,5 @@ public class Offer {
     private Property property;
 
     @ManyToOne
-    private AppUser user;
+    private User user;
 }

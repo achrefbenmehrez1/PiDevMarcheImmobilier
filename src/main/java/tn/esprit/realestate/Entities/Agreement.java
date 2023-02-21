@@ -24,11 +24,11 @@ public class Agreement {
     private Advertisement advertisement;
 
     @ManyToOne
-    private AppUser client;
+    private User client;
 
     @ManyToOne
-    private AppUser agent;
+    private User agent;
 
     @ManyToOne
-    private AppUser owner;
+    private User owner;
 }

@@ -31,5 +31,5 @@ public class Token {
     public boolean expired;
 
     @ManyToOne
-    public AppUser user;
+    public User user;
 }

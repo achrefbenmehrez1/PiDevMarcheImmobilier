@@ -31,8 +31,8 @@ public class Appointment {
     private Property property;
 
     @ManyToOne
-    private AppUser agent;
+    private User agent;
 
     @ManyToOne
-    private AppUser client;
+    private User client;
 }

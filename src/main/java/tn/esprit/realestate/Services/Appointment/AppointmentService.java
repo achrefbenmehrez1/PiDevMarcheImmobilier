@@ -2,7 +2,7 @@ package tn.esprit.realestate.Services.Appointment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tn.esprit.realestate.Entities.AppUser;
+import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Entities.Property;
 import tn.esprit.realestate.IServices.IAppointmentService;
@@ -63,8 +63,8 @@ public class AppointmentService implements IAppointmentService {
     @Override
     public Appointment addAppointment(Appointment appointment, long propertyId, long agentId, long clientId) {
         Property property = propertyRepository.findById(propertyId).orElse(null);
-        AppUser agent = userRepository.findById(agentId).orElse(null);
-        AppUser client = userRepository.findById(clientId).orElse(null);
+        User agent = userRepository.findById(agentId).orElse(null);
+        User client = userRepository.findById(clientId).orElse(null);
 
         appointment.setProperty(property);
         appointment.setAgent(agent);
