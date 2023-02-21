@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 public class Agency {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

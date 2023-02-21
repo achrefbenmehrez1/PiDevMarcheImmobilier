@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Token {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
     @Column(unique = true)
