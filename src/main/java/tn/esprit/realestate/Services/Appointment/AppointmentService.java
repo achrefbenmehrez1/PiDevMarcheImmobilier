@@ -6,9 +6,9 @@ import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Entities.Property;
 import tn.esprit.realestate.IServices.IAppointmentService;
-import tn.esprit.realestate.Repositories.AppUserRepository;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
 import tn.esprit.realestate.Repositories.PropertyRepository;
+import tn.esprit.realestate.Repositories.UserRepository;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ import java.util.List;
 public class AppointmentService implements IAppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PropertyRepository propertyRepository;
-    private final AppUserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public AppointmentService(AppointmentRepository appointmentRepository, PropertyRepository propertyRepository, AppUserRepository userRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, PropertyRepository propertyRepository, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
