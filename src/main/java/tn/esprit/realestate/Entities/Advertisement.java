@@ -23,6 +23,6 @@ public class Advertisement {
     @Enumerated
     private TypeAd typeAd;
     @ManyToOne private Property property;
-    @ManyToOne private User user;
+    @ManyToOne private AppUser user;
     @OneToOne private Agreement agreement;
 }

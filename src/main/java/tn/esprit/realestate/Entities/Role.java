@@ -1,4 +1,35 @@
 package tn.esprit.realestate.Entities;
 
-public enum Role {
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.*;
+
+import static jakarta.persistence.FetchType.EAGER;
+
+@Entity
+@Table
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
+@Slf4j
+@Getter
+@Setter
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    private String name;
+@ManyToMany(mappedBy = "roles")
+    private List<AppUser> users = new ArrayList<>();
+
+    public Role(String name) {
+        this.name = name;
+    }
+
 }

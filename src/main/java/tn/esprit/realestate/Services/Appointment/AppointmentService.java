@@ -2,9 +2,11 @@ package tn.esprit.realestate.Services.Appointment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.realestate.Entities.AppUser;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Entities.Property;
 import tn.esprit.realestate.Entities.User;
+import tn.esprit.realestate.Repositories.AppUserRepository;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
 import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
@@ -15,10 +17,10 @@ import java.util.List;
 public class AppointmentService implements IAppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PropertyRepository propertyRepository;
-    private final UserRepository userRepository;
+    private final AppUserRepository userRepository;
 
     @Autowired
-    public AppointmentService(AppointmentRepository appointmentRepository, PropertyRepository propertyRepository, UserRepository userRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, PropertyRepository propertyRepository, AppUserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.propertyRepository = propertyRepository;
         this.userRepository = userRepository;
@@ -26,8 +28,8 @@ public class AppointmentService implements IAppointmentService {
     @Override
     public Appointment addAppointment(Appointment appointment, long propertyId, long agentId, long clientId) {
         Property property = propertyRepository.findById(propertyId).orElse(null);
-        User agent = userRepository.findById(agentId).orElse(null);
-        User client = userRepository.findById(clientId).orElse(null);
+        AppUser agent = userRepository.findById(agentId).orElse(null);
+        AppUser client = userRepository.findById(clientId).orElse(null);
 
         appointment.setProperty(property);
         appointment.setAgent(agent);
