@@ -5,30 +5,22 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Entity
-@Table
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Slf4j
-@Getter
-@Setter
 public class Agreement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+
+    @NonNull
     private String payment_method;
-    @Column
+
+    @NonNull
     private String penalties;
-    @OneToOne
+
+    @OneToOne(mappedBy = "agreement")
     private Advertisement advertisement;
-
-    @ManyToOne
-    private User client;
-
-    @ManyToOne
-    private User agent;
-
-    @ManyToOne
-    private User owner;
 }

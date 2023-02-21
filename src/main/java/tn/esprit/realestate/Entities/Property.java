@@ -2,24 +2,39 @@ package tn.esprit.realestate.Entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+
 
 @Entity
 @Table
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
-@Slf4j
-@Getter
-@Setter
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
+
     @Column
     private double size;
+
     @Column
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @Column
+    private int rooms;
+
+    @Column
+    private boolean parking;
+
+    @Column
+    private double yardSpace;
+
+    @Column
+    private boolean garage;
+
+    @Column
+    private String region;
 }
