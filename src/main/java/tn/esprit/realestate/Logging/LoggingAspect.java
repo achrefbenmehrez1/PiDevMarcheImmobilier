@@ -1,4 +1,4 @@
-package tn.esprit.realestate.Aop.Logging;
+package tn.esprit.realestate.Logging;
 
 import java.util.Arrays;
 import org.aspectj.lang.JoinPoint;

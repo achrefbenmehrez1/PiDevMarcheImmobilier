@@ -16,5 +16,5 @@ import lombok.extern.slf4j.Slf4j;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
 }

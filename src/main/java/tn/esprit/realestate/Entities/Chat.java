@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 @Entity
 @Table
 @NoArgsConstructor
@@ -16,5 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
+
+    private String message;
+
+    private Date date;
+
+    @ManyToOne
+    private User sender;
+
+    @ManyToOne
+    private User receiver;
 }

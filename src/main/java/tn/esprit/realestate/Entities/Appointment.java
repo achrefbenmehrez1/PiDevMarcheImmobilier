@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 @Entity
 @Table
 @NoArgsConstructor
@@ -16,5 +18,21 @@ import lombok.extern.slf4j.Slf4j;
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+
+    private String description;
+
+    private String location;
+
+    @ManyToOne
+    private Property property;
+
+    @ManyToOne
+    private User agent;
+
+    @ManyToOne
+    private User client;
 }

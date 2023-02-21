@@ -16,5 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    private Long id;
+
+    private String description;
+
+    private String price;
+
+    @ManyToOne
+    private Property property;
+
+    @ManyToOne
+    private User user;
 }
