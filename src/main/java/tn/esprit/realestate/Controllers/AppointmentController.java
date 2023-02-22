@@ -17,11 +17,6 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    @GetMapping
-    public String getAllAppointments() {
-        return "test";
-    }
-
     @PostMapping("/{propertyId}/{agentId}/{clientId}")
     public Appointment addAppointment(@RequestBody Appointment appointment, @PathVariable long propertyId, @PathVariable long agentId, @PathVariable long clientId) {
         return appointmentService.addAppointment(appointment, propertyId, agentId, clientId);
