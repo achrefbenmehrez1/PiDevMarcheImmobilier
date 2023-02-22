@@ -33,6 +33,5 @@ public class Advertisement {
     @OneToOne
     private Property property;
 
-    @OneToOne
-    private Agreement agreement;
+   
 }
