@@ -1,14 +1,12 @@
-package tn.esprit.realestate.Controllers;
+package tn.esprit.realestate.Controllers.Appointment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.realestate.Dto.AddAppointmentResponse;
 import tn.esprit.realestate.Entities.Appointment;
-import tn.esprit.realestate.IServices.IAppointmentService;
+import tn.esprit.realestate.IServices.Appointment.IAppointmentService;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
 
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 

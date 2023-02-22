@@ -1,4 +1,4 @@
-package tn.esprit.realestate.IServices;
+package tn.esprit.realestate.IServices.Appointment;
 
 import org.springframework.http.ResponseEntity;
 import tn.esprit.realestate.Entities.Appointment;
