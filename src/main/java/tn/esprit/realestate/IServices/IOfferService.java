@@ -11,8 +11,8 @@ public interface IOfferService {
 
     public void addOffer(Offer add, long userId);
     public Offer getOfferById(Long id) ;
-    public Offer createOffer(Offer offer);
-    public void updateOffer(Long id, Offer offer) ;
+    public boolean createOffer(Offer offer, long userId, long propertyId);
+    public void updateOffer(Long id, Offer offer, long userId, long propertyId) ;
     public void deleteOffer(Long id);
 
 

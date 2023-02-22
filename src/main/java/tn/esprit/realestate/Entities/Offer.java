@@ -1,5 +1,6 @@
 package tn.esprit.realestate.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
 @Slf4j
 @Getter
 @Setter
@@ -23,8 +23,10 @@ public class Offer {
     private String price;
 
     @ManyToOne
+    @JsonIgnore
     private Property property;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
 }

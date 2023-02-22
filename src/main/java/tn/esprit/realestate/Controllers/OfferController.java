@@ -31,14 +31,14 @@ public class OfferController {
         return offerService.getOfferById(id);
     }
 
-    @PostMapping("")
-    public Offer createOffer(@RequestBody Offer offer) {
-        return offerService.createOffer(offer);
+    @PostMapping("/{userId}/{propertyId}")
+    public boolean createOffer(@RequestBody Offer offer, @PathVariable Long userId, @PathVariable Long propertyId) {
+        return offerService.createOffer(offer, userId, propertyId);
     }
 
-    @PutMapping("/{id}")
-    public void updateOffer(@PathVariable Long id, @RequestBody Offer offer) {
-        offerService.updateOffer(id, offer);
+    @PutMapping("/{id}/{userId}/{propertyId}")
+    public void updateOffer(@PathVariable Long id, @RequestBody Offer offer, @PathVariable Long userId, @PathVariable Long propertyId) {
+        offerService.updateOffer(id, offer, userId, propertyId);
     }
 
     @DeleteMapping("/{id}")

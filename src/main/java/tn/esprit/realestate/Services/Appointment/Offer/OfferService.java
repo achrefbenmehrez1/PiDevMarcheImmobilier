@@ -4,8 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Entities.Offer;
+import tn.esprit.realestate.Entities.Property;
+import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.IOfferService;
 import tn.esprit.realestate.Repositories.OfferRepository;
+import tn.esprit.realestate.Repositories.PropertyRepository;
+import tn.esprit.realestate.Repositories.UserRepository;
 
 import java.util.List;
 
@@ -14,6 +18,10 @@ public class OfferService implements  IOfferService{
 
     @Autowired
     private OfferRepository offerRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PropertyRepository propertyRepository;
     @Override
     public List<Offer> getAllOffers() {
         return offerRepository.findAll();
@@ -30,16 +38,21 @@ public class OfferService implements  IOfferService{
         return offerRepository.findById(id).orElse(null);
     }
     @Override
-    public Offer createOffer(Offer offer) {
-        return offerRepository.save(offer);
+    public boolean createOffer(Offer offer, long userId, long propertyId) {
+        User user = userRepository.findById(userId).orElse(null);
+        Property property = propertyRepository.findById(propertyId).orElse(null);
+        offer.setUser(user);
+        offer.setProperty(property);
+        offerRepository.save(offer);
+        return true;
     }
     @Override
-    public void updateOffer(Long id, Offer offer)  {
+    public void updateOffer(Long id, Offer offer, long userId, long propertyId){
         Offer existingOffer = getOfferById(id);
         existingOffer.setDescription(offer.getDescription());
         existingOffer.setPrice(offer.getPrice());
-        existingOffer.setProperty(offer.getProperty());
-        existingOffer.setUser(offer.getUser());
+        existingOffer.setProperty(propertyRepository.findById(propertyId).orElse(null));
+        existingOffer.setUser(userRepository.findById(userId).orElse(null));
         offerRepository.save(existingOffer);
     }
     @Override
