@@ -32,15 +32,6 @@ public class AppointmentService implements IAppointmentService {
     public Appointment updateAppointment(Appointment appointment) {
         Appointment existingAppointment = appointmentRepository.findById(appointment.getId()).orElse(null);
 
-        if (existingAppointment != null) {
-            existingAppointment.setAgent(appointment.getAgent());
-            existingAppointment.setClient(appointment.getClient());
-            existingAppointment.setProperty(appointment.getProperty());
-            existingAppointment.setDescription(appointment.getDescription());
-            existingAppointment.setDate(appointment.getDate());
-
-            appointmentRepository.save(existingAppointment);
-        }
 
         return existingAppointment;
     }
@@ -66,7 +57,7 @@ public class AppointmentService implements IAppointmentService {
         User agent = userRepository.findById(agentId).orElse(null);
         User client = userRepository.findById(clientId).orElse(null);
 
-        appointment.setProperty(property);
+
         appointment.setAgent(agent);
         appointment.setClient(client);
 
