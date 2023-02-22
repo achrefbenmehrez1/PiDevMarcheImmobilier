@@ -28,10 +28,12 @@ public class Appointment {
     private String location;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
