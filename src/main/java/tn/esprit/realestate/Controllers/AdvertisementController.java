@@ -2,6 +2,8 @@ package tn.esprit.realestate.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.realestate.Entities.Advertisement;
+import tn.esprit.realestate.Entities.Type;
+import tn.esprit.realestate.Entities.TypeAd;
 import tn.esprit.realestate.IServices.IAdvertisementService;
 
 
@@ -14,9 +16,9 @@ public class AdvertisementController {
     IAdvertisementService advertisementService;
 
     @PostMapping("/addAd/{id}")
-    public void addAdvertisement(@RequestBody Advertisement add,@PathVariable(value = "id") long userId){
+    public Advertisement addAdvertisement(@RequestBody Advertisement add,@PathVariable(value = "id") long userId){
 
-        advertisementService.addAdvertisement(add,userId);
+        return advertisementService.addAdvertisement(add,userId);
     }
 
     @DeleteMapping("/deleteAd/{id}")
@@ -38,6 +40,14 @@ public class AdvertisementController {
     @GetMapping("/getUsersAd/{id}")
     public List<Advertisement> getUserAds(@PathVariable(value = "id") long userid){
         return advertisementService.getUserAds(userid);
+    }
+
+    @GetMapping("/search")
+    public List<Advertisement> getAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
+                                      @RequestParam(value="typeProp",required = false) Type typeProp,
+                                      @RequestParam(value="region",required = false) String region)
+    {
+        return advertisementService.getAds(typeAd,typeProp,region);
     }
 
 

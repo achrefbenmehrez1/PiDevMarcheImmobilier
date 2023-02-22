@@ -21,5 +21,5 @@ public class Agreement {
     @NonNull
     private String penalties;
 
-   
+
 }
