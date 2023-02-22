@@ -21,6 +21,5 @@ public class Agreement {
     @NonNull
     private String penalties;
 
-    @OneToOne(mappedBy = "agreement")
-    private Advertisement advertisement;
+   
 }

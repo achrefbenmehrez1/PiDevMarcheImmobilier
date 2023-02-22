@@ -33,5 +33,5 @@ public class Advertisement {
     @OneToOne
     private Property property;
 
-   
+
 }
