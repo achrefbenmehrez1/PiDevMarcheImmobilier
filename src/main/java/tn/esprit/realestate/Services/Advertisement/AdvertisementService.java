@@ -67,5 +67,11 @@ public class AdvertisementService implements IAdvertisementService {
         return advertisementRepository.findAll();
     }
 
+    @Override
+    public List<Advertisement> getUserAds(long userid) {
+        User user = userRepository.findById(userid).get();
+        return advertisementRepository.findByUser(user);
+    }
+
 
 }

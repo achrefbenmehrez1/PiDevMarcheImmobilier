@@ -35,5 +35,10 @@ public class AdvertisementController {
         return advertisementService.getAllAds();
     }
 
+    @GetMapping("/getUsersAd/{id}")
+    public List<Advertisement> getUserAds(@PathVariable(value = "id") long userid){
+        return advertisementService.getUserAds(userid);
+    }
+
 
 }

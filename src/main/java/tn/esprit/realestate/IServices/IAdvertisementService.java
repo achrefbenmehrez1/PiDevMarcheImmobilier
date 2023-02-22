@@ -11,4 +11,6 @@ public interface IAdvertisementService {
 
     public Advertisement updateAdvertisement(Advertisement ad);
     public List<Advertisement> getAllAds();
+
+    public List<Advertisement> getUserAds(long userid);
 }
