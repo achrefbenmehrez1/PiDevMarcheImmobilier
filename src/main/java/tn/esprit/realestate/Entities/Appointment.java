@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -19,15 +21,24 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    @Column(nullable = false)
+    private String title;
 
-    private String description;
-
+    @Column(nullable = true)
     private String location;
 
-    @ManyToOne
-    private Property property;
+    @Column(nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(nullable = false)
+    private LocalDateTime endDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AppointmentType appointmentType;
+
+    @Column(nullable = true)
+    private String meetingLink;
 
     @ManyToOne
     private User agent;

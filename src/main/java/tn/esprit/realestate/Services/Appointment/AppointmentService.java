@@ -1,6 +1,8 @@
 package tn.esprit.realestate.Services.Appointment;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Dto.AddAppointmentResponse;
 import tn.esprit.realestate.Entities.User;
@@ -12,13 +14,15 @@ import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AppointmentService implements IAppointmentService {
     private final AppointmentRepository appointmentRepository;
-    private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+
+    private static final String BASE_URL = "https://meet.google.com/new";
 
     @Override
     public Appointment updateAppointment(Appointment appointment) {
@@ -27,9 +31,11 @@ public class AppointmentService implements IAppointmentService {
         if (existingAppointment != null) {
             existingAppointment.setAgent(appointment.getAgent());
             existingAppointment.setClient(appointment.getClient());
-            existingAppointment.setProperty(appointment.getProperty());
-            existingAppointment.setDescription(appointment.getDescription());
-            existingAppointment.setDate(appointment.getDate());
+            existingAppointment.setStartDate(appointment.getStartDate());
+            existingAppointment.setEndDate(appointment.getEndDate());
+            existingAppointment.setTitle(appointment.getTitle());
+            existingAppointment.setAppointmentType(appointment.getAppointmentType());
+            existingAppointment.setLocation(appointment.getLocation());
 
             appointmentRepository.save(existingAppointment);
         }
@@ -63,21 +69,20 @@ public class AppointmentService implements IAppointmentService {
     }
 
     @Override
-    public AddAppointmentResponse addAppointment(Appointment appointment, long propertyId, long agentId, long clientId) {
-        Property property = propertyRepository.findById(propertyId).orElse(null);
+    public ResponseEntity<String> addAppointment(Appointment appointment, long agentId, long clientId) {
         User agent = userRepository.findById(agentId).orElse(null);
         User client = userRepository.findById(clientId).orElse(null);
 
-        appointment.setProperty(property);
         appointment.setAgent(agent);
         appointment.setClient(client);
 
         appointmentRepository.save(appointment);
-        System.out.println(appointment);
-        return AddAppointmentResponse.builder()
-                .message("Appointment added successfully")
-                .date(appointment.getDate())
-                .build();
+        return new ResponseEntity<>("Appointment added successfully", HttpStatus.OK);
+    }
 
+    @Override
+    public String generateGoogleMeetLink(Appointment appointment) {
+        String meetingId = UUID.randomUUID().toString();
+        return String.format("%s/%s?authuser=0&hs=122&hcb=%s", BASE_URL, meetingId, appointment.getId());
     }
 }
