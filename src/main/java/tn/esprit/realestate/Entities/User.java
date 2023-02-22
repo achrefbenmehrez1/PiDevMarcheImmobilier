@@ -1,5 +1,6 @@
 package tn.esprit.realestate.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -34,4 +35,8 @@ public class User {
 
     @ManyToOne
     private Agency agency;
+
+    @OneToMany(mappedBy ="user",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Advertisement> advertisements;
 }
