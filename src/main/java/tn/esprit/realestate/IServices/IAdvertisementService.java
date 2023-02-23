@@ -16,5 +16,5 @@ public interface IAdvertisementService {
 
     public List<Advertisement> getUserAds(long userid);
 
-    public List<Advertisement> getAds(TypeAd typeAd, Type typeProp, String region);
+    public List<Advertisement> getAds(TypeAd typeAd, Type typeProp, String region, Integer rooms);
 }

@@ -45,9 +45,10 @@ public class AdvertisementController {
     @GetMapping("/search")
     public List<Advertisement> getAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
                                       @RequestParam(value="typeProp",required = false) Type typeProp,
-                                      @RequestParam(value="region",required = false) String region)
+                                      @RequestParam(value="region",required = false) String region,
+                                      @RequestParam(value="rooms",required = false) Integer rooms)
     {
-        return advertisementService.getAds(typeAd,typeProp,region);
+        return advertisementService.getAds(typeAd,typeProp,region,rooms);
     }
 
 

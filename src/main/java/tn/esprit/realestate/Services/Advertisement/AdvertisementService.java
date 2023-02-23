@@ -80,7 +80,8 @@ public class AdvertisementService implements IAdvertisementService {
     }
 
     @Override
-    public List<Advertisement> getAds(TypeAd typeAd, Type typeProp, String region) {
+    public List<Advertisement> getAds(TypeAd typeAd, Type typeProp,
+                                      String region, Integer rooms ) {
 
         List<Advertisement> advertisements=advertisementRepository.findAll((Specification<Advertisement>) (root, cq, cb) -> {
             Predicate p = cb.conjunction();
@@ -94,6 +95,12 @@ public class AdvertisementService implements IAdvertisementService {
             if(region!=null && !(region.isEmpty())){
                 p=cb.and(p,cb.like(root.get("property").get("region"),"%"+region+"%"));
             }
+
+            if(rooms!=null ){
+                p=cb.and(p,cb.equal(root.get("property").get("rooms"),rooms));
+            }
+
+
             cq.orderBy(cb.asc(root.get("id")));
             return p;
         });
