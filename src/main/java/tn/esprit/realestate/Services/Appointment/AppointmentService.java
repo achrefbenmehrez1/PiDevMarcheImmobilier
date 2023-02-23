@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Entities.Appointment;
+import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Appointment.IAppointmentService;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
@@ -16,10 +16,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AppointmentService implements IAppointmentService {
+    private static final String BASE_URL = "https://meet.google.com/new";
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
-
-    private static final String BASE_URL = "https://meet.google.com/new";
 
     @Override
     public Appointment updateAppointment(Appointment appointment) {

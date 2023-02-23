@@ -6,20 +6,20 @@ import java.util.List;
 
 public interface IPostService {
 
-        public Post createPost(Post post);
+    public Post createPost(Post post);
 
-        public List<Post> getAllPosts();
+    public List<Post> getAllPosts();
 
-        public List<Post> getPostsByTag(String tagName);
+    public List<Post> getPostsByTag(String tagName);
 
-        public List<Post> getLatestPosts(int limit);
+    public List<Post> getLatestPosts(int limit);
 
-        public List<Post> searchPosts(String keyword);
+    public List<Post> searchPosts(String keyword);
 
-        public Post getPostById(Long id);
+    public Post getPostById(Long id);
 
-        public void deletePost(Long id);
+    public void deletePost(Long id);
 
-        public void updatePost(Long id, Post updatedPost);
+    public void updatePost(Long id, Post updatedPost);
 
 }

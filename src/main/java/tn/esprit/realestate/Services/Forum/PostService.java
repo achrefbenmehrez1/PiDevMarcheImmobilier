@@ -1,15 +1,13 @@
 package tn.esprit.realestate.Services.Forum;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Entities.Post;
 import tn.esprit.realestate.IServices.Forum.IPostService;
 import tn.esprit.realestate.Repositories.PostRepository;
+import tn.esprit.realestate.Repositories.TagRepository;
 
-import java.awt.print.Pageable;
 import java.util.Date;
 import java.util.List;
 
@@ -18,11 +16,15 @@ public class PostService implements IPostService {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private TagRepository tagRepository;
 
+    @Transactional
     public Post createPost(Post post) {
         post.setCreationDate(new Date());
         post.setNumberOfComments(0);
         post.setNumberOfReactions(0);
+
         return postRepository.save(post);
     }
 

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tn.esprit.realestate.Entities.Post;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Repository
