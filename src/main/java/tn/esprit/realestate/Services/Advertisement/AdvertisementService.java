@@ -58,6 +58,9 @@ public class AdvertisementService implements IAdvertisementService {
             if(ad.getProperty()==null){
                 ad.setProperty(existingAd.getProperty());
             }
+            if(ad.getUser()==null){
+                ad.setUser(existingAd.getUser());
+            }
             propertyRepository.save(ad.getProperty());
             ad.setUser(existingAd.getUser());
             advertisementRepository.save(ad);

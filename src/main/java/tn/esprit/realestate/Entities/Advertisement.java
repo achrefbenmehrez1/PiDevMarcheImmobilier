@@ -21,6 +21,9 @@ public class Advertisement {
     private String title;
 
     @Column
+    private double price;
+
+    @Column
     private String description;
 
     @NonNull
@@ -28,6 +31,7 @@ public class Advertisement {
     private TypeAd typeAd;
 
     @ManyToOne
+    @JsonIgnore
     private User user;
 
     @OneToOne
