@@ -21,7 +21,7 @@ import tn.esprit.realestate.Security.Token;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table
 public class User implements UserDetails {
 
     @Id
