@@ -7,7 +7,7 @@ import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Services.Appointment.User.UserService;
 import java.util.List;
 @RestController
-@RequestMapping("/api/v1/auth/users")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;

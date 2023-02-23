@@ -11,5 +11,7 @@ import java.util.List;
 public enum Role {
 
     USER,
-    ADMIN
+    ADMIN,
+    BANKING_AGENT,
+    PROMOTER
 }
