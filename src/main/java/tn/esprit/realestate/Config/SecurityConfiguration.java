@@ -12,6 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -27,10 +29,10 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers( "/auth/**","/users/**")
+                .requestMatchers( "/auth/**")
                 .permitAll()
-                .anyRequest()
-                .authenticated()
+                .requestMatchers("/users/**")
+                .hasRole("ADMIN")
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
