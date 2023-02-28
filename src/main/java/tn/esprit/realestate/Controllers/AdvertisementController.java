@@ -57,10 +57,23 @@ public class AdvertisementController {
         return advertisementService.deleteAdvertisement(id);
     }
 
-    @PutMapping("/updateAd")
-    public Advertisement updateAdvertisement(@RequestBody Advertisement ad){
+    @PutMapping("/updateAd/{id}")
+    public Advertisement updateAdvertisement(@PathVariable(value = "id") long id,
+                                             @RequestParam(value="title",required = false)String title,
+                                             @RequestParam(value="price",required = false)Double price,
+                                             @RequestParam(value="description",required = false)String description,
+                                             @RequestParam(value="typeAd",required = false)TypeAd typeAd,
+                                             @RequestParam(value="size",required = false)Double size,
+                                             @RequestParam(value="type",required = false)Type type,
+                                             @RequestParam(value="rooms",required = false)Integer rooms,
+                                             @RequestParam(value="parking",required = false)Boolean parking,
+                                             @RequestParam(value="yardSpace",required = false) Double yardSpace,
+                                             @RequestParam(value="garage",required = false)Boolean garage,
+                                             @RequestParam(value="region",required = false)String region,
+                                             @RequestParam(value="photo",required = false) MultipartFile photo) throws IOException {
 
-        return advertisementService.updateAdvertisement(ad);
+        return advertisementService.updateAdvertisement(id,title,price,description,typeAd,size,type,
+                rooms, parking,yardSpace,garage,region,photo);
     }
 
     @GetMapping("/getAds")

@@ -35,7 +35,8 @@ public class AdvertisementService implements IAdvertisementService {
 
 
     @Override
-    public void addAd(String title,Double price, String description, TypeAd typeAd, Double size, Type type, int rooms, boolean parking, Double yardSpace, boolean garage, String region, MultipartFile photo, long userId) throws IOException{
+    public void addAd(String title,Double price, String description, TypeAd typeAd, Double size, Type type, int rooms, boolean parking, Double yardSpace,
+                      boolean garage, String region, MultipartFile photo, long userId) throws IOException{
 
 
 
@@ -98,9 +99,15 @@ public class AdvertisementService implements IAdvertisementService {
     }
 
     @Override
-    public Advertisement updateAdvertisement(Advertisement ad) {
+    public Advertisement updateAdvertisement(long id,String title,Double price, String description, TypeAd typeAd,
+                                             Double size, Type type, Integer rooms, Boolean parking,
+                                             Double yardSpace, Boolean garage, String region,MultipartFile photo) throws IOException {
+
+        Advertisement ad = advertisementRepository.findById(id).get();
+
 
         Advertisement existingAd = advertisementRepository.findById(ad.getId()).get();
+        //Property existing_prop=propertyRepository.findById(propid).get();
 
         if(existingAd != null){
 
@@ -111,8 +118,55 @@ public class AdvertisementService implements IAdvertisementService {
                 ad.setUser(existingAd.getUser());
             }
 
+            if(title!=null){
+                ad.setTitle(title);
+            }
+
+            if(price!=null){
+                ad.setPrice(price);
+            }
+
+            if(description!=null){
+                ad.setDescription(description);
+            }
+            if(typeAd!=null){
+                ad.setTypeAd(typeAd);
+            }
+            if(size!=null){
+                ad.getProperty().setSize(size);
+            }
+
+            if(type!=null){
+                ad.getProperty().setType(type);
+
+            }
+
+            if(rooms!=null){
+                ad.getProperty().setRooms(rooms);
+            }
+
+            if(yardSpace!=null){
+                ad.getProperty().setYardSpace(yardSpace);
+            }
+
+            if(region!=null){
+                ad.getProperty().setRegion(region);
+            }
+            if(garage!=null){
+                ad.getProperty().setGarage(garage);
+            }
+            if(parking!=null){
+                ad.getProperty().setParking(parking);
+            }
+
+
+
+            if(photo!=null){
+                ad.getProperty().setPhoto(storeProfileImage(photo));
+            }
+
             propertyRepository.save(ad.getProperty());
-            ad.setUser(existingAd.getUser());
+            //ad.setUser(existingAd.getUser());
             advertisementRepository.save(ad);
         }
         return ad;

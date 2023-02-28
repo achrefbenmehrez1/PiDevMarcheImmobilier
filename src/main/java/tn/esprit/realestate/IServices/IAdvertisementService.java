@@ -16,7 +16,9 @@ public interface IAdvertisementService {
     public Advertisement addAdvertisement(Advertisement add, long userId);
     public boolean deleteAdvertisement(long id);
 
-    public Advertisement updateAdvertisement(Advertisement ad);
+    public Advertisement updateAdvertisement(long id,String title,Double price, String description, TypeAd typeAd,
+                                             Double size, Type type, Integer rooms, Boolean parking,
+                                             Double yardSpace, Boolean garage, String region, MultipartFile photo) throws IOException;
     public List<Advertisement> getAllAds();
 
     public List<Advertisement> getUserAds(long userid);
