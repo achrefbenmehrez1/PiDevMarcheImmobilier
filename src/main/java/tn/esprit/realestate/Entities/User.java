@@ -56,6 +56,16 @@ public class User implements UserDetails {
     @ManyToOne
     private Agency agency;
 
+    public User(String email, String password, Role role, String firstname, String lasstname, String address, String phone) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.firstname = firstname;
+        this.lastname = lasstname;
+        this.address = address;
+        this.phone = phone;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

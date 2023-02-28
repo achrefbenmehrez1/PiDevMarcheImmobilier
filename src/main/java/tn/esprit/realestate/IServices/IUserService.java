@@ -1,6 +1,7 @@
 package tn.esprit.realestate.IServices;
 
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
 
 import java.io.IOException;
@@ -15,14 +16,9 @@ public interface IUserService {
     public Optional<User> getUserById(Long id);
 
     public Optional<User> getUserByEmail(String email);
+    User createUser(String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException;
 
-    String uploadFile(MultipartFile file) throws IOException;
-
-    User createUser(User user, MultipartFile profileImage) throws IOException;
-
-
-
-    User updateUser(User user, MultipartFile image) throws IOException;
+    User updateUser(Long id, String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException;
 
     public void deleteUser(Long id);
 }

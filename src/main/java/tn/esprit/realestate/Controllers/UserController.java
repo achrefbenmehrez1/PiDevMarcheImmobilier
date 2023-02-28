@@ -1,9 +1,11 @@
 package tn.esprit.realestate.Controllers;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Services.User.UserService;
 
@@ -31,9 +33,10 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<User> createUser(@RequestBody User user,@RequestParam(required = false,value="file") MultipartFile profileImage) throws IOException {
-        User createdUser = userService.createUser(user,profileImage);
+    @PostMapping(value="/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    public ResponseEntity<User> createUser(@RequestParam String email, @RequestParam String password, @RequestParam Role role, @RequestParam(required = false) String firstname,@RequestParam(required = false) String lastname,@RequestParam(required = false) String address,@RequestParam(required = false) String phone, @RequestParam(required = false,value="file") MultipartFile profileImage) throws IOException {
+        User createdUser = userService.createUser(email,password,role,firstname,lastname,address,phone,profileImage);
         return ResponseEntity.created(
                         ServletUriComponentsBuilder.fromCurrentRequest()
                                 .path("/{id}")
@@ -42,10 +45,11 @@ public class UserController {
                 .body(createdUser);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user,@RequestBody(required = false) MultipartFile profileImage) throws IOException {
+    @PutMapping(value="/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestParam(required = false) String email, @RequestParam(required = false) String password, @RequestParam(required = false) Role role, @RequestParam(required = false) String firstname,@RequestParam(required = false) String lastname,@RequestParam(required = false) String address,@RequestParam(required = false) String phone,@RequestParam(required = false) MultipartFile profileImage) throws IOException {
 
-        User updatedUser = userService.updateUser(user,profileImage);
+        User updatedUser = userService.updateUser(id,email,password,role,firstname,lastname,address,phone,profileImage);
+
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -53,6 +57,10 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping(value ="/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String storeProfileImage(@RequestParam MultipartFile profileImage) throws IOException {
+        return profileImage.getOriginalFilename();
     }
 }
 

@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.IUserService;
 import tn.esprit.realestate.Repositories.UserRepository;
@@ -41,7 +43,7 @@ public class UserService implements IUserService {
         String imagePath = null;
         if (profileImage != null && !profileImage.isEmpty()) {
             String fileName = StringUtils.cleanPath(profileImage.getOriginalFilename());
-            Path uploadDir = Paths.get("./user-profiles");
+            Path uploadDir = Paths.get("C:/Users/user/OneDrive/Documents/PiDevMarcheImmobilier/src/main/resources/user-profiles");
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
@@ -65,19 +67,10 @@ public class UserService implements IUserService {
     }
 
 
-    @Override
-    public String uploadFile(MultipartFile file) throws IOException {
-        if (file == null || file.isEmpty()) {
-            return null;
-        }
 
-        String fileName = file.getOriginalFilename();
-        String filePath = "path/to/uploaded/file/" + fileName;
-        file.transferTo(new File(filePath));
-        return filePath;
-    }
     @Override
-    public User createUser(User user, MultipartFile profileImage) throws IOException {
+    public User createUser(String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException {
+        User user = new User(email, password, role, firstname, lastname, address, phone);
         String profileImagePath = storeProfileImage(profileImage);
         user.setProfileImagePath(profileImagePath);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -85,7 +78,32 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUser(User user, MultipartFile profileImage) throws IOException {
+    public User updateUser(Long id, String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException {
+        User user =getUserById(id).get();
+        if (email != null) {
+            user.setEmail(email);
+        }
+        if (password != null) {
+            user.setPassword(password);
+
+        }
+        if (role != null) {
+            user.setRole(role);
+        }
+        if (firstname != null) {
+            user.setFirstname(firstname);
+        }
+        if (lastname != null) {
+            user.setLastname(lastname);
+        }
+        if (address != null) {
+            user.setAddress(address);
+        }
+        if (phone != null) {
+            user.setPhone(phone);
+        }
+
+
         String profileImagePath = storeProfileImage(profileImage);
         if (profileImagePath != null) {
             user.setProfileImagePath(profileImagePath);
