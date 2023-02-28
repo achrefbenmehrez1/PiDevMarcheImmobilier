@@ -37,11 +37,7 @@ public class AdvertisementController {
                 rooms, parking,yardSpace,garage,region,photo,userId);
     }
 
-    //test
-    @PostMapping(value ="/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String storeProfileImage(@RequestParam MultipartFile profileImage) throws IOException {
-        return profileImage.getOriginalFilename();
-    }
+
 
 
 
@@ -90,9 +86,15 @@ public class AdvertisementController {
     public List<Advertisement> getAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
                                       @RequestParam(value="typeProp",required = false) Type typeProp,
                                       @RequestParam(value="region",required = false) String region,
-                                      @RequestParam(value="rooms",required = false) Integer rooms)
+                                      @RequestParam(value="rooms",required = false) Integer rooms,
+                                      @RequestParam(value="parking",required = false) Boolean parking,
+                                      @RequestParam(value="garage",required = false) Boolean garage,
+                                      @RequestParam(value="maxPrice",required = false)Double maxPrice,
+                                      @RequestParam(value="minPrice",required = false)Double minPrice,
+                                      @RequestParam(value="minSize",required = false) Double minSize,
+                                      @RequestParam(value="maxSize",required = false) Double maxSize)
     {
-        return advertisementService.getAds(typeAd,typeProp,region,rooms);
+        return advertisementService.getAds(typeAd,typeProp,region,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize);
     }
 
 

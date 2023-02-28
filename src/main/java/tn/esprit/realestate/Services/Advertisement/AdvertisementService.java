@@ -185,7 +185,10 @@ public class AdvertisementService implements IAdvertisementService {
 
     @Override
     public List<Advertisement> getAds(TypeAd typeAd, Type typeProp,
-                                      String region, Integer rooms ) {
+                                      String region, Integer rooms,
+                                      Boolean parking, Boolean garage,
+                                      Double maxPrice, Double minPrice,
+                                      Double minSize, Double maxSize) {
 
         List<Advertisement> advertisements=advertisementRepository.findAll((Specification<Advertisement>) (root, cq, cb) -> {
             Predicate p = cb.conjunction();
@@ -202,6 +205,30 @@ public class AdvertisementService implements IAdvertisementService {
 
             if(rooms!=null ){
                 p=cb.and(p,cb.equal(root.get("property").get("rooms"),rooms));
+            }
+
+            if(garage!=null){
+                p=cb.and(p,cb.equal(root.get("property").get("garage"),garage));
+            }
+
+            if(parking!=null){
+                p=cb.and(p,cb.equal(root.get("property").get("parking"),parking));
+            }
+
+            if(maxPrice!=null){
+                p=cb.and(p,cb.lessThanOrEqualTo(root.get("price"),maxPrice));
+            }
+
+            if(minPrice!=null){
+                p=cb.and(p,cb.greaterThanOrEqualTo(root.get("price"),minPrice));
+            }
+
+            if(minSize!=null){
+                p=cb.and(p,cb.greaterThanOrEqualTo(root.get("property").get("size"),minSize));
+            }
+
+            if(maxSize!=null){
+                p=cb.and(p,cb.lessThanOrEqualTo(root.get("property").get("size"),maxSize));
             }
 
 
