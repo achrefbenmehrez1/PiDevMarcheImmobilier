@@ -42,7 +42,7 @@ public class AdvertisementService implements IAdvertisementService {
 
         Advertisement ad=new Advertisement(title,price,description,typeAd);
 
-        Property prop=new Property(size, type, rooms, parking,yardSpace,garage, region, storeProfileImage(photo));
+        Property prop=new Property(size, type, rooms, parking,yardSpace,garage, region, storeImage(photo));
 
         User user = userRepository.findById(userId).get();
         ad.setProperty(prop);
@@ -54,7 +54,7 @@ public class AdvertisementService implements IAdvertisementService {
     }
 
     //test
-    public String storeProfileImage(MultipartFile profileImage) throws IOException {
+    public String storeImage(MultipartFile profileImage) throws IOException {
         String imagePath = null;
         if (profileImage != null && !profileImage.isEmpty()) {
             String fileName = StringUtils.cleanPath(profileImage.getOriginalFilename());
@@ -162,11 +162,11 @@ public class AdvertisementService implements IAdvertisementService {
 
 
             if(photo!=null){
-                ad.getProperty().setPhoto(storeProfileImage(photo));
+                ad.getProperty().setPhoto(storeImage(photo));
             }
 
             propertyRepository.save(ad.getProperty());
-           
+
             advertisementRepository.save(ad);
         }
         return ad;
