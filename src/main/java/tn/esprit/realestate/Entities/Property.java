@@ -37,4 +37,7 @@ public class Property {
 
     @Column
     private String region;
+
+
+
 }

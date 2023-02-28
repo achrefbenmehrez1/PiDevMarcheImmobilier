@@ -26,6 +26,7 @@ public class Advertisement {
     @Column
     private String description;
 
+
     @NonNull
     @Enumerated(EnumType.STRING)
     private TypeAd typeAd;
