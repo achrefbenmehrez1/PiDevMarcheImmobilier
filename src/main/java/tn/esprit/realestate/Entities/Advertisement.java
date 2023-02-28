@@ -21,7 +21,7 @@ public class Advertisement {
     private String title;
 
     @Column
-    private double price;
+    private Double price;
 
     @Column
     private String description;
@@ -37,6 +37,15 @@ public class Advertisement {
 
     @OneToOne
     private Property property;
+
+
+    public Advertisement(String title,Double price, String description, TypeAd typeAd) {
+        this.title=title;
+        this.price=price;
+        this.description=description;
+        this.typeAd=typeAd;
+
+    }
 
 
 }

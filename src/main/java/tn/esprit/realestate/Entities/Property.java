@@ -17,7 +17,7 @@ public class Property {
     private long id;
 
     @Column
-    private double size;
+    private Double size;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -30,7 +30,7 @@ public class Property {
     private boolean parking;
 
     @Column
-    private double yardSpace;
+    private Double yardSpace;
 
     @Column
     private boolean garage;
@@ -38,6 +38,21 @@ public class Property {
     @Column
     private String region;
 
+    @Column
+    private String photo;
 
+    public Property(double size, Type type, int rooms, boolean parking,
+                    double yardSpace, boolean garage,
+                    String region, String photo) {
+        this.size=size;
+        this.type=type;
+        this.rooms=rooms;
+        this.parking=parking;
+        this.yardSpace=yardSpace;
+        this.garage=garage;
+        this.region=region;
+        this.photo=photo;
+
+    }
 
 }

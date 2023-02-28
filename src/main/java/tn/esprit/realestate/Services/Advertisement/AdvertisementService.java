@@ -4,12 +4,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.*;
 import tn.esprit.realestate.IServices.IAdvertisementService;
 import tn.esprit.realestate.Repositories.AdvertisementRepository;
 import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Service
@@ -23,6 +32,46 @@ public class AdvertisementService implements IAdvertisementService {
 
     @Autowired
     UserRepository userRepository;
+
+
+    @Override
+    public void addAd(String title,Double price, String description, TypeAd typeAd, Double size, Type type, int rooms, boolean parking, Double yardSpace, boolean garage, String region, MultipartFile photo, long userId) throws IOException{
+
+
+
+        Advertisement ad=new Advertisement(title,price,description,typeAd);
+
+        Property prop=new Property(size, type, rooms, parking,yardSpace,garage, region, storeProfileImage(photo));
+
+        User user = userRepository.findById(userId).get();
+        ad.setProperty(prop);
+        ad.setUser(user);
+
+        propertyRepository.save(prop);
+        advertisementRepository.save(ad);
+
+    }
+
+    //test
+    public String storeProfileImage(MultipartFile profileImage) throws IOException {
+        String imagePath = null;
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String fileName = StringUtils.cleanPath(profileImage.getOriginalFilename());
+            Path uploadDir = Paths.get("C:/spring/PiDevMarcheImmobilier/src/main/resources/images");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+            try (InputStream inputStream = profileImage.getInputStream()) {
+                Path filePath = uploadDir.resolve(fileName);
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                imagePath = filePath.toAbsolutePath().toString();
+            } catch (IOException ex) {
+                throw new IOException("Could not store file " + fileName + ". Please try again!", ex);
+            }
+        }
+        return imagePath;
+    }
+
 
 
     @Override
@@ -61,6 +110,7 @@ public class AdvertisementService implements IAdvertisementService {
             if(ad.getUser()==null){
                 ad.setUser(existingAd.getUser());
             }
+            
             propertyRepository.save(ad.getProperty());
             ad.setUser(existingAd.getUser());
             advertisementRepository.save(ad);
