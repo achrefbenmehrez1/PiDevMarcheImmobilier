@@ -1,37 +1,93 @@
 package tn.esprit.realestate.Entities;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+        import java.util.List;
 
-@Entity
-@Table
+        import jakarta.persistence.*;
+
+        import java.util.Collection;
+
+        import lombok.AllArgsConstructor;
+        import lombok.Builder;
+        import lombok.Data;
+        import lombok.NoArgsConstructor;
+        import org.springframework.security.core.GrantedAuthority;
+        import org.springframework.security.core.authority.SimpleGrantedAuthority;
+        import org.springframework.security.core.userdetails.UserDetails;
+        import org.springframework.web.multipart.MultipartFile;
+        import tn.esprit.realestate.Security.Token;
+
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
-@Slf4j
-@Getter
-@Setter
-@Builder
-public class User {
+@Entity
+@Table
+public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String firstname;
+    @Column(nullable = false)
     private String lastname;
-    private String username;
+    @Column(nullable = true)
+    private String address;
+
+    @Column(nullable = true)
+    private String phone;
+
+
+    @Transient
+    private MultipartFile profileImage;
+    @Column
+    private String profileImagePath;
+    @Column(unique=true)
     private String email;
     private String password;
 
-    @ManyToMany
-    private List<Role> roles;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
     @ManyToOne
     private Agency agency;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
