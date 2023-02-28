@@ -41,8 +41,8 @@ public class Property {
     @Column
     private String photo;
 
-    public Property(double size, Type type, int rooms, boolean parking,
-                    double yardSpace, boolean garage,
+    public Property(Double size, Type type, int rooms, boolean parking,
+                    Double yardSpace, boolean garage,
                     String region, String photo) {
         this.size=size;
         this.type=type;

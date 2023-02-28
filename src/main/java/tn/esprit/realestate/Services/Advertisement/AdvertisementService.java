@@ -110,7 +110,7 @@ public class AdvertisementService implements IAdvertisementService {
             if(ad.getUser()==null){
                 ad.setUser(existingAd.getUser());
             }
-            
+
             propertyRepository.save(ad.getProperty());
             ad.setUser(existingAd.getUser());
             advertisementRepository.save(ad);
