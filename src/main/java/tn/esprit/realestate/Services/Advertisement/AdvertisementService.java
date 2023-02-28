@@ -107,7 +107,7 @@ public class AdvertisementService implements IAdvertisementService {
 
 
         Advertisement existingAd = advertisementRepository.findById(ad.getId()).get();
-        //Property existing_prop=propertyRepository.findById(propid).get();
+
 
         if(existingAd != null){
 
@@ -166,7 +166,7 @@ public class AdvertisementService implements IAdvertisementService {
             }
 
             propertyRepository.save(ad.getProperty());
-            //ad.setUser(existingAd.getUser());
+           
             advertisementRepository.save(ad);
         }
         return ad;
