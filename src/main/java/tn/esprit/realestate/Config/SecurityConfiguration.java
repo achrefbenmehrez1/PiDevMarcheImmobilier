@@ -33,6 +33,8 @@ public class SecurityConfiguration {
                 .permitAll()
                 .requestMatchers("/users/**")
                 .hasAnyAuthority("ADMIN")
+                .requestMatchers("/account/**")
+                .authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

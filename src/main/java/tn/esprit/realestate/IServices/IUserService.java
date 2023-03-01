@@ -1,5 +1,7 @@
 package tn.esprit.realestate.IServices;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
@@ -21,4 +23,8 @@ public interface IUserService {
     User updateUser(Long id, String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException;
 
     public void deleteUser(Long id);
+
+    User getUserByToken(@NonNull HttpServletRequest request);
+
+    User updateUserByToken(@NonNull HttpServletRequest request, String email, String password, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException;
 }

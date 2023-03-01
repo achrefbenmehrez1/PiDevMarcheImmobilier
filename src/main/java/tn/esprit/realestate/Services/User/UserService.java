@@ -1,18 +1,20 @@
 package tn.esprit.realestate.Services.User;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import tn.esprit.realestate.Config.JwtService;
 import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.IUserService;
@@ -28,11 +30,13 @@ public class UserService implements IUserService {
     private  PasswordEncoder passwordEncoder;
 
     private  UserRepository userRepository;
+    private JwtService jwtService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
     @Override
     public List<User> getAllUsers() {
@@ -118,5 +122,49 @@ public class UserService implements IUserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
-}
+    @Override
+    public User getUserByToken(@NonNull HttpServletRequest request) {
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
+
+        return userRepository.findByEmail(userEmail).get();
+    }
+    @Override
+    public User updateUserByToken(@NonNull HttpServletRequest request, String email, String password,String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException {
+        User user = getUserByToken(request);
+        if (email != null) {
+            user.setEmail(email);
+        }
+        if (password != null) {
+            user.setPassword(password);
+
+        }
+
+        if (firstname != null) {
+            user.setFirstname(firstname);
+        }
+        if (lastname != null) {
+            user.setLastname(lastname);
+        }
+        if (address != null) {
+            user.setAddress(address);
+        }
+        if (phone != null) {
+            user.setPhone(phone);
+        }
+
+
+        String profileImagePath = storeProfileImage(profileImage);
+        if (profileImagePath != null) {
+            user.setProfileImagePath(profileImagePath);
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    }
+
 
