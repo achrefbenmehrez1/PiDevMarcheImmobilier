@@ -4,8 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tn.esprit.realestate.Config.JwtService;
-import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Services.User.UserService;
 

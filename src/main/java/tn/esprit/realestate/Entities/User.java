@@ -45,6 +45,8 @@ public class User implements UserDetails {
     private String profileImagePath;
     @Column(unique=true)
     private String email;
+    @JsonIgnore
+    @Column
     private String password;
 
     @Enumerated(EnumType.STRING)
