@@ -3,14 +3,13 @@ package tn.esprit.realestate.Entities;
 
         import java.util.List;
 
+        import com.fasterxml.jackson.annotation.JsonIgnore;
+        import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
         import jakarta.persistence.*;
 
         import java.util.Collection;
 
-        import lombok.AllArgsConstructor;
-        import lombok.Builder;
-        import lombok.Data;
-        import lombok.NoArgsConstructor;
+        import lombok.*;
         import org.springframework.security.core.GrantedAuthority;
         import org.springframework.security.core.authority.SimpleGrantedAuthority;
         import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +22,7 @@ package tn.esprit.realestate.Entities;
 @AllArgsConstructor
 @Entity
 @Table
+@ToString
 public class User implements UserDetails {
 
     @Id
@@ -50,18 +50,20 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Token> tokens;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     private Agency agency;
 
-    public User(String email, String password, Role role, String firstname, String lasstname, String address, String phone) {
+    public User(String email, String password, Role role, String firstname, String lastname, String address, String phone) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.firstname = firstname;
-        this.lastname = lasstname;
+        this.lastname = lastname;
         this.address = address;
         this.phone = phone;
     }

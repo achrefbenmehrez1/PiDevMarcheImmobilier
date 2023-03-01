@@ -43,7 +43,8 @@ public class UserService implements IUserService {
         String imagePath = null;
         if (profileImage != null && !profileImage.isEmpty()) {
             String fileName = StringUtils.cleanPath(profileImage.getOriginalFilename());
-            Path uploadDir = Paths.get("C:/Users/user/OneDrive/Documents/PiDevMarcheImmobilier/src/main/resources/user-profiles");
+            String currentDir = System.getProperty("user.dir");
+            Path uploadDir = Paths.get(currentDir, "src", "main", "resources", "user-profiles");
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
