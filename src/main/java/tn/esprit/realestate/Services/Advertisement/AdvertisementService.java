@@ -58,7 +58,9 @@ public class AdvertisementService implements IAdvertisementService {
         String imagePath = null;
         if (profileImage != null && !profileImage.isEmpty()) {
             String fileName = StringUtils.cleanPath(profileImage.getOriginalFilename());
-            Path uploadDir = Paths.get("C:/spring/PiDevMarcheImmobilier/src/main/resources/images");
+            //Path uploadDir = Paths.get("C:/spring/PiDevMarcheImmobilier/src/main/resources/images");
+            String currentDir = System.getProperty("user.dir");
+            Path uploadDir = Paths.get(currentDir, "src", "main", "resources", "images");
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
