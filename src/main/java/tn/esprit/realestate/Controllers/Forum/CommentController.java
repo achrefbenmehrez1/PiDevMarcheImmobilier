@@ -1,14 +1,18 @@
 package tn.esprit.realestate.Controllers.Forum;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.realestate.Entities.Comment;
+import tn.esprit.realestate.Entities.Forum.Comment;
+import tn.esprit.realestate.Entities.Forum.Post;
+import tn.esprit.realestate.Entities.Forum.Reply;
 import tn.esprit.realestate.Services.Forum.CommentService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts/{postId}/comments")
+@RequestMapping("/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -18,19 +22,9 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @GetMapping("")
-    public List<Comment> getAllCommentsByPost(@PathVariable Long postId) {
-        return commentService.getAllCommentsByPost(postId);
-    }
-
-    @GetMapping("/{id}")
-    public Comment getCommentById(@PathVariable Long id) {
-        return commentService.getCommentById(id);
-    }
-
     @PostMapping("")
-    public Comment createComment(@PathVariable Long postId, @RequestBody Comment comment) {
-        return commentService.createComment(postId, comment);
+    public Comment createComment(@RequestBody Comment comment) {
+        return commentService.createComment(comment);
     }
 
     @PutMapping("/{id}")
@@ -39,7 +33,48 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    public boolean deleteComment(@PathVariable Long id) {
+        return commentService.deleteComment(id);
+    }
+
+    @GetMapping("/byAuthor/{authorId}")
+    public List<Comment> getCommentsByAuthor(@PathVariable Long authorId) {
+        return commentService.getCommentsByAuthor(authorId);
+    }
+
+    @GetMapping("/byPost/{postId}")
+    public List<Comment> getCommentsByPost(@PathVariable Long postId) {
+        return commentService.getCommentsByPost(postId);
+    }
+
+    @GetMapping("/byDate")
+    public List<Comment> getCommentsByDateRange(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        return commentService.getCommentsByDateRange(startDate, endDate);
+    }
+
+    @GetMapping("/latest/{count}")
+    public List<Comment> getLatestComments(@PathVariable int count) {
+        return commentService.getLatestComments(count);
+    }
+
+    @GetMapping("/{id}")
+    public Comment getCommentById(@PathVariable Long id) {
+        return commentService.getCommentById(id);
+    }
+
+    @GetMapping("/mostCommentedPosts")
+    public List<Post> getMostCommentedPosts() {
+        return commentService.getMostCommentedPosts();
+    }
+
+    @GetMapping("/commentsWithMostReactions")
+    public List<Comment> getCommentsWithMostReactions() {
+        return commentService.getCommentsWithMostReactions();
+    }
+
+    @GetMapping("/findRepliesByCommentId/{id}")
+    public List<Reply> findRepliesByCommentId(@PathVariable Long id) {
+        return commentService.findRepliesByCommentId(id);
     }
 }
