@@ -22,12 +22,12 @@ public class Notification {
 
     @Column private String message;
 
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt;
-
-    @Column private Boolean readln;
+    @Column private Boolean readByte;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdAt;
 }

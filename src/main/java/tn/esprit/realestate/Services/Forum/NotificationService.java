@@ -1,6 +1,7 @@
 package tn.esprit.realestate.Services.Forum;
 
 import org.springframework.stereotype.Service;
+import tn.esprit.realestate.Controllers.Forum.NotificationDto;
 import tn.esprit.realestate.Entities.Forum.Notification;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Forum.INotificationService;
@@ -23,27 +24,53 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void sendNotification(String message, Long userId) {
-        Notification notification = new Notification();
-        notification.setMessage(message);
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setReadln(false);
-        User user = userRepository.findById(userId).orElse(null);
-        notification.setUser(user);
-        notificationRepository.save(notification);
+    public List<NotificationDto> getNotificationsByUser(Long userId) {
+        return notificationRepository.findByUserId(userId).stream().map(n -> new NotificationDto(n.getMessage(), n.getReadByte(), n.getUser().getFirstname(), n.getUser().getLastname(), n.getUser().getUsername(), n.getUser().getEmail(), LocalDateTime.now())).toList();
     }
 
     @Override
-    public List<Notification> getUnreadNotifications(Long userId) {
-        return notificationRepository.findByUserIdAndReadlnFalse(userId);
+    public void sendNotification(String message, Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        user.ifPresent(u -> {
+            Notification notification = new Notification();
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setMessage(message);
+            notification.setUser(u);
+            notification.setReadByte(false);
+            notificationRepository.save(notification);
+        });
+    }
+
+    @Override
+    public List<NotificationDto> getUnreadNotifications(Long userId) {
+        return notificationRepository.findByUserIdAndReadByteFalse(userId).stream().map(n -> new NotificationDto(n.getMessage(), n.getReadByte(), n.getUser().getFirstname(), n.getUser().getLastname(), n.getUser().getUsername(), n.getUser().getEmail(), LocalDateTime.now())).toList();
     }
 
     @Override
     public void markAsRead(Long notificationId) {
         Optional<Notification> notification = notificationRepository.findById(notificationId);
         notification.ifPresent(n -> {
-            n.setReadln(true);
+            n.setReadByte(true);
             notificationRepository.save(n);
         });
+    }
+
+    @Override
+    public void markAllNotificationsAsRead(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        for (Notification notification : notifications) {
+            notification.setReadByte(true);
+        }
+        notificationRepository.saveAll(notifications);
+    }
+
+    @Override
+    public void deleteNotification(Long notificationId) {
+        notificationRepository.deleteById(notificationId);
+    }
+
+    @Override
+    public void deleteAllNotificationsByUser(Long userId) {
+        notificationRepository.deleteByUserId(userId);
     }
 }
