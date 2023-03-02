@@ -62,5 +62,15 @@ public class UserController {
     public String storeProfileImage(@RequestParam MultipartFile profileImage) throws IOException {
         return profileImage.getOriginalFilename();
     }
+    @GetMapping("/search")
+    public List<User> getusers(@RequestParam(value="role",required = false) Role role,
+                                      @RequestParam(value="email",required = false) String email,
+                                      @RequestParam(value="firstname",required = false) String firstname,
+                                      @RequestParam(value="lastname",required = false) String lastname,
+                                      @RequestParam(value="address",required = false) String address,
+                                      @RequestParam(value="phone",required = false) String phone){
+
+        return userService.getusers(role,email,firstname,lastname,address,phone);
+    }
 }
 

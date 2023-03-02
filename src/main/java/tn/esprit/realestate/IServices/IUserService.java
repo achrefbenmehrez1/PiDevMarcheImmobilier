@@ -27,4 +27,6 @@ public interface IUserService {
     User getUserByToken(@NonNull HttpServletRequest request);
 
     User updateUserByToken(@NonNull HttpServletRequest request, String email, String password, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException;
+
+    List<User> getusers(Role role, String email, String firstname, String lastname, String address, String phone);
 }

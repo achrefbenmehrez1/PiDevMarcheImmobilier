@@ -1,8 +1,10 @@
 package tn.esprit.realestate.Services.User;
 
+import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -163,6 +165,39 @@ public class UserService implements IUserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+    @Override
+    public List<User> getusers(Role role, String email, String firstname, String lastname,String address, String phone) {
+
+        List<User> users=userRepository.findAll((Specification<User>) (root, cq, cb) -> {
+            Predicate p = cb.conjunction();
+            if( role!=null ){
+                p= cb.and(p,cb.equal(root.get("role"),role));
+            }
+            if( email!=null  ){
+                p=cb.and(p,cb.equal(root.get("email"),email));
+            }
+
+            if(firstname!=null ){
+                p=cb.and(p,cb.like(root.get("firstname"),firstname));
+            }
+
+            if(lastname!=null ){
+                p=cb.and(p,cb.equal(root.get("lastname"),lastname));
+            }
+
+            if(address!=null){
+                p=cb.and(p,cb.equal(root.get("address"),address));
+            }
+
+            if(phone!=null){
+                p=cb.and(p,cb.equal(root.get("phone"),phone));
+            }
+
+            cq.orderBy(cb.asc(root.get("id")));
+            return p;
+        });
+        return users;
     }
 
     }
