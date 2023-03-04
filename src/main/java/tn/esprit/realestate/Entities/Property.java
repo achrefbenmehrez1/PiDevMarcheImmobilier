@@ -36,13 +36,17 @@ public class Property {
     private boolean garage;
 
     @Column
+    private String ville;
+    @Column
     private String region;
 
     @Column
     private String photo;
 
+
+
     public Property(Double size, Type type, int rooms, boolean parking,
-                    Double yardSpace, boolean garage,
+                    Double yardSpace, boolean garage,String ville,
                     String region, String photo) {
         this.size=size;
         this.type=type;
@@ -50,7 +54,21 @@ public class Property {
         this.parking=parking;
         this.yardSpace=yardSpace;
         this.garage=garage;
+        this.ville=ville;
         this.region=region;
+        this.photo=photo;
+
+    }
+
+    public Property(Double size, Type type, int rooms,
+                    boolean garage,
+                    String region,String ville, String photo) {
+        this.size=size;
+        this.type=type;
+        this.rooms=rooms;
+        this.garage=garage;
+        this.region=region;
+        this.ville=ville;
         this.photo=photo;
 
     }

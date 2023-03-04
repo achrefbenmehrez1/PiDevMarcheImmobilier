@@ -1,5 +1,6 @@
 package tn.esprit.realestate.Services.Advertisement;
 import jakarta.persistence.criteria.Predicate;
+import jdk.jfr.Description;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,6 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +28,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@EnableScheduling
 public class AdvertisementService implements IAdvertisementService {
 
     @Autowired
@@ -43,13 +48,13 @@ public class AdvertisementService implements IAdvertisementService {
 
     @Override
     public void addAd(String title,Double price, String description, TypeAd typeAd, Double size, Type type, int rooms, boolean parking, Double yardSpace,
-                      boolean garage, String region, MultipartFile photo, long userId) throws IOException{
+                      boolean garage, String region,String ville, MultipartFile photo, long userId) throws IOException{
 
 
 
         Advertisement ad=new Advertisement(title,price,description,typeAd);
 
-        Property prop=new Property(size, type, rooms, parking,yardSpace,garage, region, storeImage(photo));
+        Property prop=new Property(size, type, rooms, parking,yardSpace,garage,ville, region, storeImage(photo));
 
         User user = userRepository.findById(userId).get();
         ad.setProperty(prop);
@@ -65,7 +70,7 @@ public class AdvertisementService implements IAdvertisementService {
         String imagePath = null;
         if (profileImage != null && !profileImage.isEmpty()) {
             String fileName = StringUtils.cleanPath(profileImage.getOriginalFilename());
-            //Path uploadDir = Paths.get("C:/spring/PiDevMarcheImmobilier/src/main/resources/images");
+            //getting current directory
             String currentDir = System.getProperty("user.dir");
             Path uploadDir = Paths.get(currentDir, "src", "main", "resources", "images");
             if (!Files.exists(uploadDir)) {
@@ -110,7 +115,7 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     public Advertisement updateAdvertisement(long id,String title,Double price, String description, TypeAd typeAd,
                                              Double size, Type type, Integer rooms, Boolean parking,
-                                             Double yardSpace, Boolean garage, String region,MultipartFile photo) throws IOException {
+                                             Double yardSpace, Boolean garage, String region,String ville,MultipartFile photo) throws IOException {
 
         Advertisement ad = advertisementRepository.findById(id).get();
 
@@ -168,7 +173,9 @@ public class AdvertisementService implements IAdvertisementService {
                 ad.getProperty().setParking(parking);
             }
 
-
+            if(ville!=null){
+                ad.getProperty().setVille(ville);
+            }
 
             if(photo!=null){
                 ad.getProperty().setPhoto(storeImage(photo));
@@ -194,7 +201,8 @@ public class AdvertisementService implements IAdvertisementService {
 
     @Override
     public List<Advertisement> getAds(TypeAd typeAd, Type typeProp,
-                                      String region, Integer rooms,
+                                      String region,String ville,
+                                      Integer rooms,
                                       Boolean parking, Boolean garage,
                                       Double maxPrice, Double minPrice,
                                       Double minSize, Double maxSize) {
@@ -210,6 +218,10 @@ public class AdvertisementService implements IAdvertisementService {
 
             if(region!=null && !(region.isEmpty())){
                 p=cb.and(p,cb.like(root.get("property").get("region"),"%"+region+"%"));
+            }
+
+            if(ville!=null && !(ville.isEmpty())){
+                p=cb.and(p,cb.like(root.get("property").get("ville"),"%"+ville+"%"));
             }
 
             if(rooms!=null ){
@@ -247,7 +259,7 @@ public class AdvertisementService implements IAdvertisementService {
         return advertisements;
     }
 
-    @Override
+    @Scheduled(cron = "0 13 16 * * *")
     public List<Advertisement> getScrappedAds() throws IOException {
 
         String [] urls={
@@ -275,29 +287,27 @@ public class AdvertisementService implements IAdvertisementService {
                 if (!mubawabAnnonces.isEmpty()) {
                     for (Element annonce : mubawabAnnonces) {
 
-                        //String TypeAd =mubawabDoc.getElementsByClass("btn btnFlatSmall active").text();
-
                         //Getting Ad Type
-                        String typeAd;
+                        TypeAd typeAd;
                         if(url.contains("-a-vendre")){
-                            typeAd="Sale";
+                            typeAd=TypeAd.Sale;
                         }else{
-                            typeAd="Rental";
+                            typeAd=TypeAd.Rental;
                         }
 
                         //Getting prop Type
-                        String typeProp = null;
+                        Type typeProp ;
                         if(url.contains("appartements")){
-                            typeProp="Appartment";
+                            typeProp=Type.Appartment;
                         } else if (url.contains("maisons")) {
-                            typeProp="House";
+                            typeProp=Type.House;
                         } else if (url.contains("villas")) {
-                            typeProp="Villa";
+                            typeProp=Type.Villa;
                         } else if (url.contains("bureaux")) {
-                            typeProp="Office";
+                            typeProp=Type.Office;
                         }else{
                             //if url.contains("terrains")
-                            typeAd="Land";
+                            typeProp=Type.Land;
                         }
 
                         String title = annonce.getElementsByTag("h2").text();
@@ -316,11 +326,22 @@ public class AdvertisementService implements IAdvertisementService {
                         // Getting the ad URL
                         String propertyUrl = annonce.select("a").attr("href");
 
+                        //getting the prop photo
+                        String photoURL=annonce.select("img").attr("src");
+
+                        // getting brief desription :
+
+                        Element descriptionElement=annonce.selectFirst("p.listingP.descLi");
+                        String description=null;
+                        if (descriptionElement != null) {
+                            descriptionElement.select("a").remove();
+                             description = descriptionElement.text();
+                        }
+
                         //scrape the details
                         Document propertyDoc = Jsoup.connect(propertyUrl).get();
 
-                        //getting description
-                        String description = propertyDoc.getElementsByTag("p").text();
+
 
                         // getting the surface
                         String attributeText = propertyDoc.getElementsByClass("catNav ").text();
@@ -362,26 +383,52 @@ public class AdvertisementService implements IAdvertisementService {
 
                         String garageText = propertyDoc.getElementsByClass("characIconText centered").text();
                         String[] words = garageText.split(" ");
-                        String garage = null;
+                        boolean garage = false;
 
                         for (String word : words) {
                             if (word.toLowerCase().equals("garage")) {
-                                garage = word;
+                                garage=true;
                                 break;
                             }
                         }
 
+
+
+                        //Saving :
+
+                        // Check if the advertisement already exists in the database:
+
+                        Optional<Advertisement> optionalAd = advertisementRepository.findByForeignAdUrl(propertyUrl);
+                        if (optionalAd.isPresent()) {
+                            // The advertisement already exists in the database, skip it
+                            continue;
+                        }
+
+                        Advertisement advertisement=new Advertisement(title,price,description,typeAd,propertyUrl,true);
+                        Property property=new Property((double)surface,typeProp,chambres,garage,region,ville,photoURL);
+                        propertyRepository.save(property);
+                        advertisement.setProperty(property);
+                        advertisementRepository.save(advertisement);
+
+
+
+                        // scraping the next page
                         Element nextPageLink = mubawabDoc.getElementsByClass("Dots currentDot").first();
                         hasMorePages = nextPageLink != null;
                         page++;
 
-                        //Saving :
+
 
 
 
                         System.out.println("Advertisement  : "+"Type Ad : "+typeAd+" Type Property : "+typeProp+" |Title : " + title + "  | price :" + price + " | propertyUrl : " + propertyUrl + " | Description : " + description +
                                 " | old Text :" + attributeText + " | Surface : " + surface +
-                                "  | chambres: " + chambres + " | pieces :" + pieces + " | Old region :" + regionText + " | ville: " + ville + " | region :" + region + " | OldTextgarage :" + garageText + " | garage :" + garage);
+                                "  | chambres: " + chambres + " | pieces :" + pieces + " | Old region :" + regionText + " | ville: " + ville + " | region :" + region +
+                                " | OldTextgarage :" + garageText + " | garage :" + garage+" |Photo: "+photoURL
+                        );
+
+
+
 
                     }
                 } else {

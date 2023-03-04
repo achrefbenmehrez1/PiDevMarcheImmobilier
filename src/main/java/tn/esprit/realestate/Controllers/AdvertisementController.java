@@ -31,10 +31,11 @@ public class AdvertisementController {
                       @RequestParam(value="yardSpace",required = false) Double yardSpace,
                       @RequestParam(value="garage",required = false)boolean garage,
                       @RequestParam(value="region",required = false)String region,
+                      @RequestParam(value="ville",required = false)String ville,
                       @RequestParam(value="photo",required = false) MultipartFile photo,
                       @PathVariable(value = "id")long userId) throws IOException {
         advertisementService.addAd(title,price,description,typeAd,size,type,
-                rooms, parking,yardSpace,garage,region,photo,userId);
+                rooms, parking,yardSpace,garage,region,ville,photo,userId);
     }
 
 
@@ -66,10 +67,11 @@ public class AdvertisementController {
                                              @RequestParam(value="yardSpace",required = false) Double yardSpace,
                                              @RequestParam(value="garage",required = false)Boolean garage,
                                              @RequestParam(value="region",required = false)String region,
+                                             @RequestParam(value="ville",required = false)String ville,
                                              @RequestParam(value="photo",required = false) MultipartFile photo) throws IOException {
 
         return advertisementService.updateAdvertisement(id,title,price,description,typeAd,size,type,
-                rooms, parking,yardSpace,garage,region,photo);
+                rooms, parking,yardSpace,garage,region,ville,photo);
     }
 
     @GetMapping("/getAds")
@@ -86,6 +88,7 @@ public class AdvertisementController {
     public List<Advertisement> getAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
                                       @RequestParam(value="typeProp",required = false) Type typeProp,
                                       @RequestParam(value="region",required = false) String region,
+                                      @RequestParam(value="ville",required = false)String ville,
                                       @RequestParam(value="rooms",required = false) Integer rooms,
                                       @RequestParam(value="parking",required = false) Boolean parking,
                                       @RequestParam(value="garage",required = false) Boolean garage,
@@ -94,13 +97,18 @@ public class AdvertisementController {
                                       @RequestParam(value="minSize",required = false) Double minSize,
                                       @RequestParam(value="maxSize",required = false) Double maxSize)
     {
-        return advertisementService.getAds(typeAd,typeProp,region,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize);
+        return advertisementService.getAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize);
     }
 
+/*
     @GetMapping("/ScrapedAds")
     public List<Advertisement> getScrappedAds() throws IOException{
         return advertisementService.getScrappedAds();
     }
+
+ */
+
+
 
 
 }

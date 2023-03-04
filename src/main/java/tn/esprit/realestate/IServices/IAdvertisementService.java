@@ -12,21 +12,22 @@ public interface IAdvertisementService {
 
     public void addAd(String title,Double price, String description, TypeAd typeAd,
                       Double size, Type type, int rooms, boolean parking,
-                      Double yardSpace, boolean garage, String region, MultipartFile photo, long userId)throws IOException;
+                      Double yardSpace, boolean garage, String region,String ville,MultipartFile photo, long userId)throws IOException;
     public Advertisement addAdvertisement(Advertisement add, long userId);
     public boolean deleteAdvertisement(long id);
 
     public Advertisement updateAdvertisement(long id,String title,Double price, String description, TypeAd typeAd,
                                              Double size, Type type, Integer rooms, Boolean parking,
-                                             Double yardSpace, Boolean garage, String region, MultipartFile photo) throws IOException;
+                                             Double yardSpace, Boolean garage, String region, String ville,MultipartFile photo) throws IOException;
     public List<Advertisement> getAllAds();
 
     public List<Advertisement> getUserAds(long userid);
 
     public List<Advertisement> getAds(TypeAd typeAd, Type typeProp,
-                                      String region, Integer rooms,
+                                      String region,String ville,
+                                      Integer rooms,
                                       Boolean parking, Boolean garage,
                                       Double maxPrice, Double minPrice,
                                       Double minSize, Double maxSize);
-    public List<Advertisement> getScrappedAds() throws IOException;
+    //public List<Advertisement> getScrappedAds() throws IOException;
 }

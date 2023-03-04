@@ -3,7 +3,6 @@ package tn.esprit.realestate.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table
@@ -23,13 +22,22 @@ public class Advertisement {
     @Column
     private Double price;
 
-    @Column
+
+    @Column(length = 5000)
+    @Lob
     private String description;
 
 
     @NonNull
     @Enumerated(EnumType.STRING)
     private TypeAd typeAd;
+
+    @Column(length = 5000)
+    @Lob
+    private String foreignAdUrl;
+
+    @Column
+    private boolean scraped;
 
     @ManyToOne
     @JsonIgnore
@@ -44,6 +52,16 @@ public class Advertisement {
         this.price=price;
         this.description=description;
         this.typeAd=typeAd;
+
+    }
+
+    public Advertisement(String title,Double price, String description, TypeAd typeAd,String foreignAdUrl,boolean scraped) {
+        this.title=title;
+        this.price=price;
+        this.description=description;
+        this.typeAd=typeAd;
+        this.foreignAdUrl=foreignAdUrl;
+        this.scraped=scraped;
 
     }
 
