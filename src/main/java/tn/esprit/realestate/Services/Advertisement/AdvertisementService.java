@@ -259,7 +259,7 @@ public class AdvertisementService implements IAdvertisementService {
         return advertisements;
     }
 
-    @Scheduled(cron = "0 13 16 * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     public List<Advertisement> getScrappedAds() throws IOException {
 
         String [] urls={
