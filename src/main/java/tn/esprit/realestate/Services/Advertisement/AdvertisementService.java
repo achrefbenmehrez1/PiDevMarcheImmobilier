@@ -1,6 +1,10 @@
 package tn.esprit.realestate.Services.Advertisement;
 import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -19,7 +23,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AdvertisementService implements IAdvertisementService {
@@ -239,6 +246,157 @@ public class AdvertisementService implements IAdvertisementService {
         });
         return advertisements;
     }
+
+    @Override
+    public List<Advertisement> getScrappedAds() throws IOException {
+
+        String [] urls={
+        "appartements-a-louer","maisons-a-louer","villas-et-maisons-de-luxe-a-louer","bureaux-et-commerces-a-louer","terrains-a-louer",
+        "appartements-a-vendre","maisons-a-vendre","villas-et-maisons-de-luxe-a-vendre","bureaux-et-commerces-a-vendre","terrains-a-vendre"
+        };
+
+
+        List<Advertisement> ads = new ArrayList<>();
+
+        for (String url: urls) {
+            System.out.println("--------"+url+"----------");
+            int page = 1;
+            boolean hasMorePages = true;
+            String baseUrlMubaweb = "https://www.mubawab.tn/fr/sc/"+url;
+
+            while (hasMorePages) {
+
+                String urlMubaweb = page == 1 ? baseUrlMubaweb : baseUrlMubaweb + ":p:" + page;
+
+                Document mubawabDoc = Jsoup.connect(urlMubaweb).get();
+
+                Elements mubawabAnnonces = mubawabDoc.getElementsByClass("listingBox w100");
+                System.out.println("page :" + page+" Size : "+mubawabAnnonces.size());
+                if (!mubawabAnnonces.isEmpty()) {
+                    for (Element annonce : mubawabAnnonces) {
+
+                        //String TypeAd =mubawabDoc.getElementsByClass("btn btnFlatSmall active").text();
+
+                        //Getting Ad Type
+                        String typeAd;
+                        if(url.contains("-a-vendre")){
+                            typeAd="Sale";
+                        }else{
+                            typeAd="Rental";
+                        }
+
+                        //Getting prop Type
+                        String typeProp = null;
+                        if(url.contains("appartements")){
+                            typeProp="Appartment";
+                        } else if (url.contains("maisons")) {
+                            typeProp="House";
+                        } else if (url.contains("villas")) {
+                            typeProp="Villa";
+                        } else if (url.contains("bureaux")) {
+                            typeProp="Office";
+                        }else{
+                            //if url.contains("terrains")
+                            typeAd="Land";
+                        }
+
+                        String title = annonce.getElementsByTag("h2").text();
+
+
+                        String priceText = annonce.select(".priceTag").text();
+                        Double price = 0.0;
+
+                        if (!priceText.isEmpty()) {
+                            String digitsOnly = priceText.replaceAll("\\D", "");
+                            if (!digitsOnly.isEmpty()) {
+                                price = Double.parseDouble(digitsOnly);
+                            }
+                        }
+
+                        // Getting the ad URL
+                        String propertyUrl = annonce.select("a").attr("href");
+
+                        //scrape the details
+                        Document propertyDoc = Jsoup.connect(propertyUrl).get();
+
+                        //getting description
+                        String description = propertyDoc.getElementsByTag("p").text();
+
+                        // getting the surface
+                        String attributeText = propertyDoc.getElementsByClass("catNav ").text();
+
+                        int surface = 0;
+                        int pieces = 0;
+                        int chambres = 0;
+
+                        // Extract the surface
+                        Pattern surfacePattern = Pattern.compile("(\\d+) m²");
+                        Matcher surfaceMatcher = surfacePattern.matcher(attributeText);
+                        if (surfaceMatcher.find()) {
+                            surface = Integer.parseInt(surfaceMatcher.group(1));
+                        }
+
+                        // Extract the number of pieces
+                        Pattern piecesPattern = Pattern.compile("(\\d+) Pièces");
+                        Matcher piecesMatcher = piecesPattern.matcher(attributeText);
+                        if (piecesMatcher.find()) {
+                            pieces = Integer.parseInt(piecesMatcher.group(1));
+                        }
+
+                        // Extract the number of chambres
+                        Pattern chambresPattern = Pattern.compile("(\\d+) Chambres");
+                        Matcher chambresMatcher = chambresPattern.matcher(attributeText);
+                        if (chambresMatcher.find()) {
+                            chambres = Integer.parseInt(chambresMatcher.group(1));
+                        }
+
+
+                        // getting region
+                        String regionText = propertyDoc.getElementsByClass("darkblue inBlock float-right floatL").text();
+                        String[] wordsRegion = regionText.split(",");
+                        String ville = wordsRegion[0];
+                        String region = wordsRegion[1];
+
+
+                        //getting garage
+
+                        String garageText = propertyDoc.getElementsByClass("characIconText centered").text();
+                        String[] words = garageText.split(" ");
+                        String garage = null;
+
+                        for (String word : words) {
+                            if (word.toLowerCase().equals("garage")) {
+                                garage = word;
+                                break;
+                            }
+                        }
+
+                        Element nextPageLink = mubawabDoc.getElementsByClass("Dots currentDot").first();
+                        hasMorePages = nextPageLink != null;
+                        page++;
+
+                        //Saving :
+
+
+
+                        System.out.println("Advertisement  : "+"Type Ad : "+typeAd+" Type Property : "+typeProp+" |Title : " + title + "  | price :" + price + " | propertyUrl : " + propertyUrl + " | Description : " + description +
+                                " | old Text :" + attributeText + " | Surface : " + surface +
+                                "  | chambres: " + chambres + " | pieces :" + pieces + " | Old region :" + regionText + " | ville: " + ville + " | region :" + region + " | OldTextgarage :" + garageText + " | garage :" + garage);
+
+                    }
+                } else {
+                    hasMorePages = false;
+                }
+
+            }
+        }
+
+        return ads;
+
+    }
+
+
+
 
 
 }

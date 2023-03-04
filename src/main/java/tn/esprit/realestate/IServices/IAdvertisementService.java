@@ -28,4 +28,5 @@ public interface IAdvertisementService {
                                       Boolean parking, Boolean garage,
                                       Double maxPrice, Double minPrice,
                                       Double minSize, Double maxSize);
+    public List<Advertisement> getScrappedAds() throws IOException;
 }
