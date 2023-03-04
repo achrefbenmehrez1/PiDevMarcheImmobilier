@@ -3,8 +3,6 @@ package tn.esprit.realestate.Entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 
 @Entity
 @Table
