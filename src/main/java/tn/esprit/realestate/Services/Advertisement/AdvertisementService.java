@@ -1,25 +1,30 @@
 package tn.esprit.realestate.Services.Advertisement;
 import jakarta.persistence.criteria.Predicate;
-import jdk.jfr.Description;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import tn.esprit.realestate.Entities.*;
 import tn.esprit.realestate.IServices.IAdvertisementService;
+import tn.esprit.realestate.IServices.IUserService;
 import tn.esprit.realestate.Repositories.AdvertisementRepository;
 import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 
-import java.io.File;
+
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -45,10 +50,13 @@ public class AdvertisementService implements IAdvertisementService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    IUserService userService;
+
 
     @Override
     public void addAd(String title,Double price, String description, TypeAd typeAd, Double size, Type type, int rooms, boolean parking, Double yardSpace,
-                      boolean garage, String region,String ville, MultipartFile photo, long userId) throws IOException{
+                      boolean garage, String region,String ville, MultipartFile photo, @NonNull HttpServletRequest request) throws IOException{
 
 
 
@@ -56,7 +64,7 @@ public class AdvertisementService implements IAdvertisementService {
 
         Property prop=new Property(size, type, rooms, parking,yardSpace,garage,ville, region, storeImage(photo));
 
-        User user = userRepository.findById(userId).get();
+        User user = userService.getUserByToken(request);
         ad.setProperty(prop);
         ad.setUser(user);
 
@@ -88,7 +96,7 @@ public class AdvertisementService implements IAdvertisementService {
     }
 
 
-
+/*
     @Override
     public Advertisement addAdvertisement(Advertisement add, long userId) {
         Property prop = add.getProperty();
@@ -98,94 +106,119 @@ public class AdvertisementService implements IAdvertisementService {
         return advertisementRepository.save(add);
     }
 
+ */
+
     @Override
-    public boolean deleteAdvertisement(long id) {
+    public boolean deleteAdvertisement(long id,@NonNull HttpServletRequest request) {
+        User user =userService.getUserByToken(request);
+
         Advertisement ad= advertisementRepository.findById(id).get();
-        if(ad==null){
-            return  false;
-        }else{
-            Property prop= ad.getProperty();
-            advertisementRepository.delete(ad);
-            propertyRepository.delete(prop);
-            return true;
+
+        if(user.getId()==ad.getUser().getId()) {
+
+
+            if (ad == null) {
+                return false;
+            } else {
+                Property prop = ad.getProperty();
+                advertisementRepository.delete(ad);
+                propertyRepository.delete(prop);
+                return true;
+            }
+
+        }else {
+            // Return 403 Forbidden if the current user is not the owner of the advertisement
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this advertisement");
         }
+
+
 
     }
 
     @Override
     public Advertisement updateAdvertisement(long id,String title,Double price, String description, TypeAd typeAd,
                                              Double size, Type type, Integer rooms, Boolean parking,
-                                             Double yardSpace, Boolean garage, String region,String ville,MultipartFile photo) throws IOException {
+                                             Double yardSpace, Boolean garage, String region,
+                                             String ville,MultipartFile photo,@NonNull HttpServletRequest request) throws IOException {
 
+        User user =userService.getUserByToken(request);
         Advertisement ad = advertisementRepository.findById(id).get();
 
 
         Advertisement existingAd = advertisementRepository.findById(ad.getId()).get();
+        if(user.getId()!=existingAd.getUser().getId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to update this advertisement");
+        }
 
 
-        if(existingAd != null){
+        if (existingAd != null) {
 
-            if(ad.getProperty()==null){
+            if (ad.getProperty() == null) {
                 ad.setProperty(existingAd.getProperty());
             }
-            if(ad.getUser()==null){
+            if (ad.getUser() == null) {
                 ad.setUser(existingAd.getUser());
             }
 
-            if(title!=null){
+            if (title != null) {
                 ad.setTitle(title);
             }
 
-            if(price!=null){
+            if (price != null) {
                 ad.setPrice(price);
             }
 
-            if(description!=null){
+            if (description != null) {
                 ad.setDescription(description);
             }
-            if(typeAd!=null){
+            if (typeAd != null) {
                 ad.setTypeAd(typeAd);
             }
-            if(size!=null){
+            if (size != null) {
                 ad.getProperty().setSize(size);
             }
 
-            if(type!=null){
+            if (type != null) {
                 ad.getProperty().setType(type);
 
             }
 
-            if(rooms!=null){
+            if (rooms != null) {
                 ad.getProperty().setRooms(rooms);
             }
 
-            if(yardSpace!=null){
+            if (yardSpace != null) {
                 ad.getProperty().setYardSpace(yardSpace);
             }
 
-            if(region!=null){
+            if (region != null) {
                 ad.getProperty().setRegion(region);
             }
-            if(garage!=null){
+            if (garage != null) {
                 ad.getProperty().setGarage(garage);
             }
-            if(parking!=null){
+            if (parking != null) {
                 ad.getProperty().setParking(parking);
             }
 
-            if(ville!=null){
+            if (ville != null) {
                 ad.getProperty().setVille(ville);
             }
 
-            if(photo!=null){
+            if (photo != null) {
                 ad.getProperty().setPhoto(storeImage(photo));
             }
 
             propertyRepository.save(ad.getProperty());
 
             advertisementRepository.save(ad);
+
         }
+
+
+
         return ad;
+
     }
 
     @Override
@@ -194,8 +227,8 @@ public class AdvertisementService implements IAdvertisementService {
     }
 
     @Override
-    public List<Advertisement> getUserAds(long userid) {
-        User user = userRepository.findById(userid).get();
+    public List<Advertisement> getUserAds(@NonNull HttpServletRequest request) {
+        User user =userService.getUserByToken(request);
         return advertisementRepository.findByUser(user);
     }
 

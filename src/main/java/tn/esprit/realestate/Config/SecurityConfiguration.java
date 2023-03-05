@@ -33,6 +33,10 @@ public class SecurityConfiguration {
                 .permitAll()
                 .requestMatchers("/users/**")
                 .hasAnyAuthority("ADMIN")
+                .requestMatchers("/ad/getAds","/ad/search")
+                .permitAll()
+                .requestMatchers("/ad/**")
+                .hasAnyAuthority("USER","PROMOTER")
                 .requestMatchers("/account/**")
                 .authenticated()
                 .and()
@@ -46,6 +50,7 @@ public class SecurityConfiguration {
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
         ;
+
 
         return http.build();
     }

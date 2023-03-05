@@ -1,6 +1,8 @@
 package tn.esprit.realestate.Controllers;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Advertisement;
@@ -19,7 +21,7 @@ public class AdvertisementController {
     IAdvertisementService advertisementService;
 
 
-    @PostMapping(value="/addAd/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value="/addAd", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void addAd(@RequestParam(value="title",required = false)String title,
                       @RequestParam(value="price",required = false)Double price,
                       @RequestParam(value="description",required = false)String description,
@@ -33,25 +35,28 @@ public class AdvertisementController {
                       @RequestParam(value="region",required = false)String region,
                       @RequestParam(value="ville",required = false)String ville,
                       @RequestParam(value="photo",required = false) MultipartFile photo,
-                      @PathVariable(value = "id")long userId) throws IOException {
+                      @NonNull HttpServletRequest request
+                     ) throws IOException {
         advertisementService.addAd(title,price,description,typeAd,size,type,
-                rooms, parking,yardSpace,garage,region,ville,photo,userId);
+                rooms, parking,yardSpace,garage,region,ville,photo,request);
     }
 
 
 
 
 
-
+/*
     @PostMapping("/addAd/{id}")
     public Advertisement addAdvertisement(@RequestBody Advertisement add,@PathVariable(value = "id") long userId){
 
         return advertisementService.addAdvertisement(add,userId);
     }
 
+ */
+
     @DeleteMapping("/deleteAd/{id}")
-    public boolean deleteAdvertisement(@PathVariable(value = "id") long id){
-        return advertisementService.deleteAdvertisement(id);
+    public boolean deleteAdvertisement(@PathVariable(value = "id") long id,@NonNull HttpServletRequest request){
+        return advertisementService.deleteAdvertisement(id,request);
     }
 
     @PutMapping("/updateAd/{id}")
@@ -68,10 +73,11 @@ public class AdvertisementController {
                                              @RequestParam(value="garage",required = false)Boolean garage,
                                              @RequestParam(value="region",required = false)String region,
                                              @RequestParam(value="ville",required = false)String ville,
-                                             @RequestParam(value="photo",required = false) MultipartFile photo) throws IOException {
+                                             @RequestParam(value="photo",required = false) MultipartFile photo,
+                                             @NonNull HttpServletRequest request) throws IOException {
 
         return advertisementService.updateAdvertisement(id,title,price,description,typeAd,size,type,
-                rooms, parking,yardSpace,garage,region,ville,photo);
+                rooms, parking,yardSpace,garage,region,ville,photo, request);
     }
 
     @GetMapping("/getAds")
@@ -79,9 +85,9 @@ public class AdvertisementController {
         return advertisementService.getAllAds();
     }
 
-    @GetMapping("/getUsersAd/{id}")
-    public List<Advertisement> getUserAds(@PathVariable(value = "id") long userid){
-        return advertisementService.getUserAds(userid);
+    @GetMapping("/getUsersAd")
+    public List<Advertisement> getUserAds(@NonNull HttpServletRequest request){
+        return advertisementService.getUserAds(request);
     }
 
     @GetMapping("/search")
