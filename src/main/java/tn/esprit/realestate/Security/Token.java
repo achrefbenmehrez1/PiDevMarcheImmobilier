@@ -1,19 +1,19 @@
-package tn.esprit.realestate.Entities;
+package tn.esprit.realestate.Security;
+
+
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import tn.esprit.realestate.Entities.User;
 
-@Entity
-@Table
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
-@Slf4j
-@Getter
-@Setter
-@Builder
+@Entity
 public class Token {
 
     @Id
@@ -31,5 +31,6 @@ public class Token {
     public boolean expired;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     public User user;
 }
