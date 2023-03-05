@@ -307,7 +307,7 @@ public class AdvertisementService implements IAdvertisementService {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
-    public List<Advertisement> getScrappedAds() throws IOException {
+    public void getScrappedAds() throws IOException {
 
         String [] urls={
         "appartements-a-louer","maisons-a-louer","villas-et-maisons-de-luxe-a-louer","bureaux-et-commerces-a-louer","terrains-a-louer",
@@ -485,7 +485,7 @@ public class AdvertisementService implements IAdvertisementService {
             }
         }
 
-        return ads;
+
 
     }
 
