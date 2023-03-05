@@ -1,10 +1,13 @@
 package tn.esprit.realestate.IServices.Forum;
 
-import tn.esprit.realestate.Entities.Forum.Comment;
+import jakarta.mail.MessagingException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Forum.Reply;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface IReplyService {
 
@@ -12,9 +15,9 @@ public interface IReplyService {
 
     public Reply getReplyById(Long id);
 
-    public Reply createReply(Reply reply);
+    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException;
 
-    public Reply updateReply(Long id, Reply reply);
+    public Reply updateReply(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId);
 
     public void deleteReply(Long id);
 

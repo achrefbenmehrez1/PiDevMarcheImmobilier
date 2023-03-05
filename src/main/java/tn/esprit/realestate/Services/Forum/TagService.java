@@ -1,6 +1,5 @@
 package tn.esprit.realestate.Services.Forum;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Entities.Forum.Post;

@@ -1,6 +1,6 @@
 package tn.esprit.realestate.IServices.Forum;
 
-import tn.esprit.realestate.Controllers.Forum.NotificationDto;
+import tn.esprit.realestate.Dto.Forum.NotificationDto;
 
 import java.util.List;
 

@@ -1,13 +1,17 @@
 package tn.esprit.realestate.Controllers.Forum;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Forum.Reply;
 import tn.esprit.realestate.Services.Forum.ReplyService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/replies")
@@ -27,13 +31,17 @@ public class ReplyController {
     }
 
     @PostMapping
-    public Reply createReply(@RequestBody Reply reply) {
-        return replyService.createReply(reply);
+    public ResponseEntity<String> createReply(@RequestParam("file") Optional<MultipartFile> file,
+                                              @RequestParam("content") String content,
+                                              @RequestParam("authorId") Long authorId) throws MessagingException {
+        return replyService.createReply(file, content, authorId);
     }
 
     @PutMapping("/{id}")
-    public Reply updateReply(@PathVariable Long id, @RequestBody Reply reply) {
-        return replyService.updateReply(id, reply);
+    public Reply updateReply(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
+                             @RequestParam("content") Optional<String> content,
+                             @RequestParam("authorId") Optional<Long> authorId) {
+        return replyService.updateReply(id, file, content, authorId);
     }
 
     @DeleteMapping("/{id}")

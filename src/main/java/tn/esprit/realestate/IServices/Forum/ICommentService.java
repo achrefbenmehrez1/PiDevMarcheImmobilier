@@ -1,10 +1,14 @@
 package tn.esprit.realestate.IServices.Forum;
 
+import jakarta.mail.MessagingException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Forum.Comment;
 import tn.esprit.realestate.Entities.Forum.Post;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ICommentService {
 
@@ -12,9 +16,9 @@ public interface ICommentService {
 
     public Comment getCommentById(Long id);
 
-    public Comment createComment(Comment comment);
+    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException;
 
-    public Comment updateComment(Long id, Comment comment);
+    public Comment updateComment(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId);
 
     public boolean deleteComment(Long id);
 

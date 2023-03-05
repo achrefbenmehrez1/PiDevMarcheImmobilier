@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import tn.esprit.realestate.Entities.Forum.Comment;
 import tn.esprit.realestate.Entities.Forum.Post;
 import tn.esprit.realestate.Entities.Forum.Tag;
 
@@ -31,4 +30,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> getMostReactedPosts(@Param("count") int count);
 
     List<Post> findByTagsContaining(Tag tag);
+
+    List<Post> findByApprovedFalse();
 }

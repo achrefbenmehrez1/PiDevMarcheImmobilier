@@ -1,16 +1,27 @@
 package tn.esprit.realestate.Services.Forum;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import tn.esprit.realestate.Entities.Forum.Comment;
-import tn.esprit.realestate.Entities.Forum.Post;
-import tn.esprit.realestate.Entities.Forum.Reply;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.realestate.Entities.Forum.*;
+import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Forum.ICommentService;
+import tn.esprit.realestate.Repositories.Forum.AttachmentRepository;
 import tn.esprit.realestate.Repositories.Forum.CommentRepository;
 import tn.esprit.realestate.Repositories.Forum.PostRepository;
 import tn.esprit.realestate.Repositories.Forum.ReplyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
+import tn.esprit.realestate.Utils.FileUploadUtil;
+import tn.esprit.realestate.Utils.ProfanityFilter;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -25,6 +36,10 @@ public class CommentService implements ICommentService {
     private PostRepository postRepository;
     @Autowired
     private ReplyRepository replyRepository;
+    @Autowired
+    private JavaMailSender javaMailSender;
+    @Autowired
+    private AttachmentRepository attachmentRepository;
 
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
@@ -39,17 +54,72 @@ public class CommentService implements ICommentService {
         }
     }
 
-    public Comment createComment(Comment comment) {
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.setAuthor(userRepository.findById(comment.getAuthor().getId()).get());
-        comment.setPost(postRepository.findById(comment.getPost().getId()).get());
-        comment.setReactions(new ArrayList<>());
-        return commentRepository.save(comment);
+    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException {
+        Comment comment = new Comment();
+        comment.setContent(content);
+
+        Post post = new Post();
+        User author = userRepository.findById(authorId).orElse(null);
+        if (author == null) {
+            return ResponseEntity.badRequest().body("Author not found");
+        }
+        if (ProfanityFilter.isProfanity(content)) {
+            post.setFlagged(true);
+        }
+
+        post.setCreatedAt(LocalDateTime.now());
+        post.setAuthor(author);
+
+        // Save the attachment if it exists
+        if (file.isPresent()) {
+            String filename = StringUtils.cleanPath(file.get().getOriginalFilename());
+            Attachment attachment = new Attachment();
+            attachment.setName(filename);
+            attachment.setPost(post);
+            attachment.setAttachmentType(file.get().getContentType());
+            attachment.setCreatedAt(LocalDateTime.now());
+
+            String uploadDir = "src/main/resources/static/attachments";
+            String attachmentLink = uploadDir + filename;
+            FileUploadUtil.saveFile(uploadDir, filename, file.get());
+
+            attachment.setAttachmentLink(attachmentLink);
+            attachmentRepository.save(attachment);
+
+            post.setAttachment(attachment);
+        }
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("achref.benmehrez@esprit.tn");
+        helper.setTo(postRepository.findById(comment.getPost().getId()).get().getAuthor().getEmail());
+        helper.setSubject("A new comment has been added to your post");
+        helper.setText("A new comment has been added to your post on Vendor.", true);
+        javaMailSender.send(message);
+
+        comment = commentRepository.save(comment);
+        if (comment.isFlagged()) {
+            String to = "achrefpgm@gmail.com";
+            String subject = "A new comment has been flagged as Profanity";
+            String body = "A new comment with Id: " + comment.getId() + ", created by User " + comment.getAuthor().getEmail() + " , has been flagged on Vendor as Profanity.";
+
+            MimeMessage message2 = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper2 = new MimeMessageHelper(message2);
+            helper2.setFrom("achref.benmehrez@esprit.tn");
+            helper2.setTo(to);
+            helper2.setSubject(subject);
+            helper2.setText(body, true);
+            javaMailSender.send(message2);
+
+            return ResponseEntity.badRequest().body("Profanity is not allowed");
+        } else {
+            return ResponseEntity.ok().body("Comment created successfully");
+        }
     }
 
     public boolean deleteComment(Long id) {
         Comment comment = getCommentById(id);
-        if(comment != null) {
+        if (comment != null) {
             commentRepository.delete(comment);
             return true;
         } else {
@@ -77,13 +147,41 @@ public class CommentService implements ICommentService {
         return commentRepository.findTopNByOrderByCreatedAtDesc(count);
     }
 
-    public Comment updateComment(Long id, Comment updatedComment) {
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isPresent()) {
-            Comment comment = optionalComment.get();
-            comment.setContent(updatedComment.getContent());
-            comment.setUpdatedAt(LocalDateTime.now()); // set updated_at to current date and time
-            return commentRepository.save(comment);
+    public Comment updateComment(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId) {
+        Comment comment = getCommentById(id);
+        if (comment != null) {
+            if (file.isPresent()) {
+                String filename = StringUtils.cleanPath(file.get().getOriginalFilename());
+                Attachment attachment = new Attachment();
+                attachment.setName(filename);
+                attachment.setComment(comment);
+                attachment.setAttachmentType(file.get().getContentType());
+                attachment.setCreatedAt(LocalDateTime.now());
+
+                String uploadDir = "src/main/resources/static/attachments";
+                String attachmentLink = uploadDir + filename;
+                FileUploadUtil.saveFile(uploadDir, filename, file.get());
+
+                attachment.setAttachmentLink(attachmentLink);
+                attachmentRepository.save(attachment);
+
+                comment.setAttachment(attachment);
+            }
+            if (content.isPresent()) {
+                comment.setContent(content.get());
+            }
+            if (authorId.isPresent()) {
+                comment.setAuthor(userRepository.findById(authorId.get()).get());
+            }
+
+            if(ProfanityFilter.isProfanity(comment.getContent())){
+                comment.setFlagged(true);
+            } else {
+                comment.setFlagged(false);
+            }
+
+            comment = commentRepository.save(comment);
+            return comment;
         } else {
             return null;
         }
@@ -104,7 +202,8 @@ public class CommentService implements ICommentService {
     }
 
     public List<Reply> findRepliesByCommentId(Long commentId) {
-        return commentRepository.findRepliesByCommentId(commentId);}
+        return commentRepository.findRepliesByCommentId(commentId);
+    }
 
     public List<Comment> getMostRepliedComments() {
         return commentRepository.findAllOrderByRepliesDesc();

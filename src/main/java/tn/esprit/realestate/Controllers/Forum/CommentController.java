@@ -2,7 +2,9 @@ package tn.esprit.realestate.Controllers.Forum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Forum.Comment;
 import tn.esprit.realestate.Entities.Forum.Post;
 import tn.esprit.realestate.Entities.Forum.Reply;
@@ -10,6 +12,7 @@ import tn.esprit.realestate.Services.Forum.CommentService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/comments")
@@ -23,13 +26,17 @@ public class CommentController {
     }
 
     @PostMapping("")
-    public Comment createComment(@RequestBody Comment comment) {
-        return commentService.createComment(comment);
+    public ResponseEntity<?> createComment(@RequestParam("file") Optional<MultipartFile> file,
+                                                @RequestParam("content") String content,
+                                                @RequestParam("authorId") Long authorId) throws jakarta.mail.MessagingException {
+        return commentService.createComment(file, content, authorId);
     }
 
     @PutMapping("/{id}")
-    public Comment updateComment(@PathVariable Long id, @RequestBody Comment updatedComment) {
-        return commentService.updateComment(id, updatedComment);
+    public Comment updateComment(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
+                                 @RequestParam("content") Optional<String> content,
+                                 @RequestParam("authorId") Optional<Long> authorId) {
+        return commentService.updateComment(id, file, content, authorId);
     }
 
     @DeleteMapping("/{id}")

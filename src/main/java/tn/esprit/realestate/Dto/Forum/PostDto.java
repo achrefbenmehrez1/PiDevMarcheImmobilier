@@ -1,6 +1,7 @@
 package tn.esprit.realestate.Dto.Forum;
 
 import lombok.Data;
+import tn.esprit.realestate.Entities.Forum.Tag;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,18 +15,10 @@ public class PostDto implements Serializable {
     private final Long id;
     private final String title;
     private final String content;
-    private final Long authorId;
-    private final String authorFirstname;
-    private final String authorLastname;
-    private final String authorUsername;
-    private final String authorEmail;
-    private final String authorPassword;
-    private final List<CommentDto> comments;
-    private final List<ReactionDto> reactions;
-    private final List<TagDto> tags;
-    private final int views;
     private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final Long authorId;
+    private final String authorUsername;
+    private final List<Tag> tags;
 
     /**
      * A DTO for the {@link tn.esprit.realestate.Entities.Forum.Comment} entity

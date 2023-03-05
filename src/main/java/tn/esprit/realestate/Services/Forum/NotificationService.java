@@ -1,7 +1,7 @@
 package tn.esprit.realestate.Services.Forum;
 
 import org.springframework.stereotype.Service;
-import tn.esprit.realestate.Controllers.Forum.NotificationDto;
+import tn.esprit.realestate.Dto.Forum.NotificationDto;
 import tn.esprit.realestate.Entities.Forum.Notification;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Forum.INotificationService;

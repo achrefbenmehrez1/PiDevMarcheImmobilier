@@ -1,6 +1,8 @@
 package tn.esprit.realestate.Entities.Forum;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,12 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
+    @Column
+    private int views;
+
+    @Column
+    private boolean approved;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User author;
@@ -46,8 +54,19 @@ public class Post {
     @JsonIgnoreProperties("post")
     private List<Tag> tags = new ArrayList<>();
 
+    @OneToOne(mappedBy = "post")
+    private Attachment attachment;
+
     @Column
-    private int views;
+    private boolean flagged = false;
+
+    /*@Transient
+    private final LanguageIdentifier languageIdentifier = new LanguageIdentifier("");
+
+    public String getLanguage() {
+        languageIdentifier.setText(content);
+        return languageIdentifier.getLanguage();
+    }*/
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

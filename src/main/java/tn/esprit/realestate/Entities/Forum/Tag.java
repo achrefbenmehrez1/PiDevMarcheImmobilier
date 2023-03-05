@@ -1,7 +1,6 @@
 package tn.esprit.realestate.Entities.Forum;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,7 @@ import java.util.List;
 @Slf4j
 @Getter
 @Setter
+@Builder
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +32,8 @@ public class Tag {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
+
+    public Tag(String tagName) {
+        this.name = tagName;
+    }
 }

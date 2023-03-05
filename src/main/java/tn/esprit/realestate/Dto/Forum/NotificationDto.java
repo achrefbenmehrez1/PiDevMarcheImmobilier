@@ -1,4 +1,4 @@
-package tn.esprit.realestate.Controllers.Forum;
+package tn.esprit.realestate.Dto.Forum;
 
 import lombok.Data;
 

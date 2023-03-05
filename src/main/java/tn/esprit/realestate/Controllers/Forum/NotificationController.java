@@ -1,11 +1,9 @@
 package tn.esprit.realestate.Controllers.Forum;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.realestate.Dto.Forum.NotificationDto;
 import tn.esprit.realestate.Dto.Forum.NotificationRequest;
-import tn.esprit.realestate.Entities.Forum.Notification;
 import tn.esprit.realestate.Services.Forum.NotificationService;
 
 import java.util.List;

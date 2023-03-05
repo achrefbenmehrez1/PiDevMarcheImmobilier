@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
-import org.springframework.stereotype.Indexed;
 import tn.esprit.realestate.Entities.User;
 
 import java.time.LocalDateTime;
@@ -38,6 +36,12 @@ public class Reply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "posts", "comments", "replies"})
     private Comment comment;
+
+    @OneToOne(mappedBy = "reply")
+    private Attachment attachment;
+
+    @Column
+    private boolean flagged = false;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
