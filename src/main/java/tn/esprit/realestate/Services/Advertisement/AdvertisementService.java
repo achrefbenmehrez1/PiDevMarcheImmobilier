@@ -1,4 +1,6 @@
 package tn.esprit.realestate.Services.Advertisement;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
@@ -14,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import tn.esprit.realestate.Entities.*;
@@ -24,9 +27,14 @@ import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 
 
-
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -292,6 +300,12 @@ public class AdvertisementService implements IAdvertisementService {
         return advertisements;
     }
 
+    @Override
+    public List<Advertisement> getAdsByUsersLocation(HttpServletRequest request) throws IOException {
+
+        return getAds(null, null,getUsersLocation(request),null,null,null,null,null,null,null,null );
+    }
+
     @Scheduled(cron = "0 0 0 * * ?")
     public List<Advertisement> getScrappedAds() throws IOException {
 
@@ -474,6 +488,86 @@ public class AdvertisementService implements IAdvertisementService {
         return ads;
 
     }
+
+
+
+    public String getUsersLocation(HttpServletRequest request) throws IOException {
+
+        //ipgeo : String apiUrl = "https://api.ipgeolocation.io/ipgeo?apiKey=e2b0e27235ec45d0b1ec293f2212f512&ip=";
+        String apiUrl = "http://ip-api.com/json/";
+
+        //String ipAddress = request.getHeader("X-Forwarded-For");
+        String ipAddress=getPublicIpAddress(request);
+
+
+        /*
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+
+         */
+
+
+
+        // Check if IP address is IPv6 loopback address
+        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
+            try {
+                InetAddress inetAddress = InetAddress.getLocalHost();
+                ipAddress = inetAddress.getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String apiUrlWithIpAddress = apiUrl + ipAddress;
+
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.getForObject(apiUrlWithIpAddress, String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(response);
+
+        String city = rootNode.path("city").asText();
+        //String region = rootNode.path("regionName").asText();
+
+        //return new String[]{region,city};
+
+        return city;
+
+    }
+
+
+    // getting public IP address of the machine
+    public String getPublicIpAddress(HttpServletRequest request) throws IOException {
+        // getting public IP address of the machine
+        URL url = new URL("https://api.ipify.org");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        return response.toString();
+    }
+
+
 
 
 

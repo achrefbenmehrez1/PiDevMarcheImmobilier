@@ -106,6 +106,11 @@ public class AdvertisementController {
         return advertisementService.getAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize);
     }
 
+    @GetMapping("/getAdsByUsersLocation")
+    public List<Advertisement> getAdsByUsersLocation(HttpServletRequest request) throws IOException{
+        return advertisementService.getAdsByUsersLocation(request);
+    }
+
 /*
     @GetMapping("/ScrapedAds")
     public List<Advertisement> getScrappedAds() throws IOException{

@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .permitAll()
                 .requestMatchers("/users/**")
                 .hasAnyAuthority("ADMIN")
-                .requestMatchers("/ad/getAds","/ad/search")
+                .requestMatchers("/ad/getAds","/ad/search","/ad/getAdsByUsersLocation")
                 .permitAll()
                 .requestMatchers("/ad/**")
                 .hasAnyAuthority("USER","PROMOTER")
