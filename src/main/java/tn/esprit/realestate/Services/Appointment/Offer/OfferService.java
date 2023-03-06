@@ -1,15 +1,9 @@
 package tn.esprit.realestate.Services.Appointment.Offer;
 
-import jakarta.xml.soap.Detail;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Entities.Details;
 import tn.esprit.realestate.Entities.Offer;
-import tn.esprit.realestate.Entities.Property;
-import tn.esprit.realestate.Entities.User;
-import tn.esprit.realestate.IServices.IDetailsService;
 import tn.esprit.realestate.IServices.IOfferService;
 import tn.esprit.realestate.Repositories.DetailsRepository;
 import tn.esprit.realestate.Repositories.OfferRepository;

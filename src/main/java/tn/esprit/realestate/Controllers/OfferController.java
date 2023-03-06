@@ -42,11 +42,6 @@ public class OfferController {
         response.setHeader(headerKey, headerValue);
 
         this.pdfGeneratorService.export(id,response);
-
-
-
-
-
     }
 
     @GetMapping("")
