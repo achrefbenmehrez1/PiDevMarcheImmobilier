@@ -8,6 +8,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -229,26 +232,47 @@ public class AdvertisementService implements IAdvertisementService {
 
     }
 
+    /*
     @Override
     public List<Advertisement> getAllAds() {
         return advertisementRepository.findAll();
     }
 
+     */
+    @Override
+    public Page<Advertisement> getAllAds(int pageNumber, int pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return advertisementRepository.findAll(pageable);
+    }
+
+    /*
     @Override
     public List<Advertisement> getUserAds(@NonNull HttpServletRequest request) {
         User user =userService.getUserByToken(request);
         return advertisementRepository.findByUser(user);
-    }
+    }*/
 
     @Override
-    public List<Advertisement> getAds(TypeAd typeAd, Type typeProp,
+    public Page<Advertisement> getUserAds(@NonNull HttpServletRequest request, int pageNumber, int pageSize){
+        User user =userService.getUserByToken(request);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return advertisementRepository.findByUser(user, pageable);
+    }
+
+
+    @Override
+    public Page<Advertisement> getAds(TypeAd typeAd, Type typeProp,
                                       String region,String ville,
                                       Integer rooms,
                                       Boolean parking, Boolean garage,
                                       Double maxPrice, Double minPrice,
-                                      Double minSize, Double maxSize) {
+                                      Double minSize, Double maxSize,
+                                      int pageNumber, int pageSize) {
 
-        List<Advertisement> advertisements=advertisementRepository.findAll((Specification<Advertisement>) (root, cq, cb) -> {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        Page<Advertisement> advertisements=advertisementRepository.findAll((Specification<Advertisement>) (root, cq, cb) -> {
             Predicate p = cb.conjunction();
             if( typeAd!=null ){
                 p= cb.and(p,cb.equal(root.get("typeAd"),typeAd));
@@ -296,14 +320,14 @@ public class AdvertisementService implements IAdvertisementService {
 
             cq.orderBy(cb.asc(root.get("id")));
             return p;
-        });
+        }, pageable);
         return advertisements;
     }
 
     @Override
-    public List<Advertisement> getAdsByUsersLocation(HttpServletRequest request) throws IOException {
+    public Page<Advertisement> getAdsByUsersLocation(HttpServletRequest request,int pageNumber, int pageSize) throws IOException {
 
-        return getAds(null, null,getUsersLocation(request),null,null,null,null,null,null,null,null );
+        return getAds(null, null,getUsersLocation(request),null,null,null,null,null,null,null,null,pageNumber,pageSize );
     }
 
     @Scheduled(cron = "0 0 0 * * ?")

@@ -1,6 +1,7 @@
 package tn.esprit.realestate.IServices;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Advertisement;
@@ -22,19 +23,22 @@ public interface IAdvertisementService {
                                              Double size, Type type, Integer rooms, Boolean parking,
                                              Double yardSpace, Boolean garage, String region,
                                              String ville,MultipartFile photo,@NonNull HttpServletRequest request) throws IOException;
-    public List<Advertisement> getAllAds();
+    //public List<Advertisement> getAllAds();
+    public Page<Advertisement> getAllAds(int pageNumber, int pageSize);
 
-    public List<Advertisement> getUserAds(@NonNull HttpServletRequest request);
+    //public List<Advertisement> getUserAds(@NonNull HttpServletRequest request);
+    public Page<Advertisement> getUserAds(@NonNull HttpServletRequest request, int pageNumber, int pageSize);
 
-    public List<Advertisement> getAds(TypeAd typeAd, Type typeProp,
+    public Page<Advertisement> getAds(TypeAd typeAd, Type typeProp,
                                       String region,String ville,
                                       Integer rooms,
                                       Boolean parking, Boolean garage,
                                       Double maxPrice, Double minPrice,
-                                      Double minSize, Double maxSize);
+                                      Double minSize, Double maxSize,
+                                      int pageNumber, int pageSize);
 
     //public List<Advertisement> getScrappedAds() throws IOException;
 
-    public List<Advertisement> getAdsByUsersLocation(HttpServletRequest request)throws IOException;
+    public Page<Advertisement> getAdsByUsersLocation(HttpServletRequest request,int pageNumber, int pageSize)throws IOException;
 
 }

@@ -1,6 +1,7 @@
 package tn.esprit.realestate.Controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
@@ -80,18 +81,27 @@ public class AdvertisementController {
                 rooms, parking,yardSpace,garage,region,ville,photo, request);
     }
 
+    /*
     @GetMapping("/getAds")
     public List<Advertisement> getAllAds(){
         return advertisementService.getAllAds();
     }
 
+     */
+    @GetMapping("/getAds")
+    public Page<Advertisement> getAllAds(@RequestParam(defaultValue = "0")int pageNumber,@RequestParam(defaultValue = "10") int pageSize){
+        return  advertisementService.getAllAds(pageNumber,pageSize);
+    }
+
     @GetMapping("/getUsersAd")
-    public List<Advertisement> getUserAds(@NonNull HttpServletRequest request){
-        return advertisementService.getUserAds(request);
+    public Page<Advertisement> getUserAds(@NonNull HttpServletRequest request ,
+                                          @RequestParam(defaultValue = "0")int pageNumber,
+                                          @RequestParam(defaultValue = "10") int pageSize){
+        return advertisementService.getUserAds(request,pageNumber,pageSize);
     }
 
     @GetMapping("/search")
-    public List<Advertisement> getAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
+    public Page<Advertisement> getAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
                                       @RequestParam(value="typeProp",required = false) Type typeProp,
                                       @RequestParam(value="region",required = false) String region,
                                       @RequestParam(value="ville",required = false)String ville,
@@ -101,14 +111,18 @@ public class AdvertisementController {
                                       @RequestParam(value="maxPrice",required = false)Double maxPrice,
                                       @RequestParam(value="minPrice",required = false)Double minPrice,
                                       @RequestParam(value="minSize",required = false) Double minSize,
-                                      @RequestParam(value="maxSize",required = false) Double maxSize)
+                                      @RequestParam(value="maxSize",required = false) Double maxSize,
+                                      @RequestParam(defaultValue = "0")int pageNumber,
+                                      @RequestParam(defaultValue = "10")int pageSize)
     {
-        return advertisementService.getAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize);
+        return advertisementService.getAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize,pageNumber,pageSize);
     }
 
     @GetMapping("/getAdsByUsersLocation")
-    public List<Advertisement> getAdsByUsersLocation(HttpServletRequest request) throws IOException{
-        return advertisementService.getAdsByUsersLocation(request);
+    public Page<Advertisement> getAdsByUsersLocation(HttpServletRequest request,
+                                                     @RequestParam(defaultValue = "0") int pageNumber,
+                                                     @RequestParam(defaultValue = "10") int pageSize) throws IOException{
+        return advertisementService.getAdsByUsersLocation(request,pageNumber,pageSize);
     }
 
 /*
