@@ -9,6 +9,7 @@ package tn.esprit.realestate.Entities;
 
         import java.util.Collection;
 
+        import jakarta.validation.constraints.Email;
         import lombok.*;
         import org.springframework.security.core.GrantedAuthority;
         import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,14 +29,13 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String firstname;
-    @Column(nullable = false)
-    private String lastname;
+    @Column(nullable = false,unique=true)
+    private String username;
+
     @Column(nullable = true)
     private String address;
 
-    @Column(nullable = true)
+    @Column(nullable = false,unique=true)
     private String phone;
 
 
@@ -43,6 +43,7 @@ public class User implements UserDetails {
     private MultipartFile profileImage;
     @Column
     private String profileImagePath;
+    @Email
     @Column(unique=true)
     private String email;
     @JsonIgnore
@@ -51,6 +52,8 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(nullable = false)
+    private boolean premium = false;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
@@ -60,12 +63,12 @@ public class User implements UserDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     private Agency agency;
 
-    public User(String email, String password, Role role, String firstname, String lastname, String address, String phone) {
+    public User(String email, String password, Role role, String username, String address, String phone) {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.username = username;
+
         this.address = address;
         this.phone = phone;
     }
@@ -83,7 +86,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @JsonIgnore

@@ -76,8 +76,8 @@ public class UserService implements IUserService {
 
 
     @Override
-    public User createUser(String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException {
-        User user = new User(email, password, role, firstname, lastname, address, phone);
+    public User createUser(String email, String password, Role role, String username, String address, String phone, MultipartFile profileImage) throws IOException {
+        User user = new User(email, password, role, username, address, phone);
         String profileImagePath = storeProfileImage(profileImage);
         user.setProfileImagePath(profileImagePath);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -85,24 +85,23 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUser(Long id, String email, String password, Role role, String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException {
+    public User updateUser(Long id, String email, String password, Role role, String username, String address, String phone, MultipartFile profileImage) throws IOException {
         User user =getUserById(id).get();
         if (email != null) {
             user.setEmail(email);
         }
         if (password != null) {
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
+
 
         }
         if (role != null) {
             user.setRole(role);
         }
-        if (firstname != null) {
-            user.setFirstname(firstname);
+        if (username != null) {
+            user.setUsername(username);
         }
-        if (lastname != null) {
-            user.setLastname(lastname);
-        }
+
         if (address != null) {
             user.setAddress(address);
         }
@@ -115,7 +114,7 @@ public class UserService implements IUserService {
         if (profileImagePath != null) {
             user.setProfileImagePath(profileImagePath);
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -132,25 +131,28 @@ public class UserService implements IUserService {
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
 
-        return userRepository.findByEmail(userEmail).get();
+        return userRepository.findByEmailOrPhoneOrUsername(userEmail).get();
     }
     @Override
-    public User updateUserByToken(@NonNull HttpServletRequest request, String email, String password,String firstname, String lastname, String address, String phone, MultipartFile profileImage) throws IOException {
+    public User updateUserByToken(@NonNull HttpServletRequest request, String email, String password,String username, String address, String phone, MultipartFile profileImage) throws IOException {
         User user = getUserByToken(request);
         if (email != null) {
             user.setEmail(email);
         }
-        if (password != null) {
-            user.setPassword(password);
 
-        }
+            if (password != null) {
+                user.setPassword(passwordEncoder.encode(password));
 
-        if (firstname != null) {
-            user.setFirstname(firstname);
-        }
-        if (lastname != null) {
-            user.setLastname(lastname);
-        }
+
+            }
+            if (username != null) {
+                user.setUsername(username);
+            }
+
+
+
+
+
         if (address != null) {
             user.setAddress(address);
         }
@@ -163,11 +165,11 @@ public class UserService implements IUserService {
         if (profileImagePath != null) {
             user.setProfileImagePath(profileImagePath);
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
     @Override
-    public List<User> getusers(Role role, String email, String firstname, String lastname,String address, String phone) {
+    public List<User> getusers(Role role, String email, String username, String lastname,String address, String phone) {
 
         List<User> users=userRepository.findAll((Specification<User>) (root, cq, cb) -> {
             Predicate p = cb.conjunction();
@@ -178,8 +180,8 @@ public class UserService implements IUserService {
                 p=cb.and(p,cb.equal(root.get("email"),email));
             }
 
-            if(firstname!=null ){
-                p=cb.and(p,cb.like(root.get("firstname"),firstname));
+            if(username!=null ){
+                p=cb.and(p,cb.like(root.get("username"),username));
             }
 
             if(lastname!=null ){
