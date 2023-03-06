@@ -1,12 +1,17 @@
 package tn.esprit.realestate.Services.Appointment.Offer;
 
+import jakarta.xml.soap.Detail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import tn.esprit.realestate.Entities.Details;
 import tn.esprit.realestate.Entities.Offer;
 import tn.esprit.realestate.Entities.Property;
 import tn.esprit.realestate.Entities.User;
+import tn.esprit.realestate.IServices.IDetailsService;
 import tn.esprit.realestate.IServices.IOfferService;
+import tn.esprit.realestate.Repositories.DetailsRepository;
 import tn.esprit.realestate.Repositories.OfferRepository;
 import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
@@ -14,49 +19,61 @@ import tn.esprit.realestate.Repositories.UserRepository;
 import java.util.List;
 
 @Service
-public class OfferService implements  IOfferService{
+public class OfferService implements IOfferService {
 
     @Autowired
     private OfferRepository offerRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private PropertyRepository propertyRepository;
+    @Autowired
+    private DetailsRepository detailsRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+
     @Override
     public List<Offer> getAllOffers() {
         return offerRepository.findAll();
     }
 
     @Override
-    public void addOffer(Offer add, long userId) {
-
-    }
-
-
-    @Override
     public Offer getOfferById(Long id) {
-        return offerRepository.findById(id).orElse(null);
+        return offerRepository.findById(id).get();
     }
+
     @Override
-    public boolean createOffer(Offer offer, long userId, long propertyId) {
-        User user = userRepository.findById(userId).orElse(null);
-        Property property = propertyRepository.findById(propertyId).orElse(null);
-        offer.setUser(user);
-        offer.setProperty(property);
+    public Offer createOffer(Offer offer) {
+        Details details = offer.getDetails();
+        offer.setDetails(details);
+        offer.setProperty(propertyRepository.findById(offer.getProperty().getId()).get());
+        offer.setUser(userRepository.findById(offer.getUser().getId()).get());
         offerRepository.save(offer);
-        return true;
+
+        details.setOffer(offer);
+        detailsRepository.save(details);
+
+        return offer;
     }
+
     @Override
-    public void updateOffer(Long id, Offer offer, long userId, long propertyId){
+    public Offer updateOffer(Long id, Offer updatedOffer) {
         Offer existingOffer = getOfferById(id);
-        existingOffer.setDescription(offer.getDescription());
-        existingOffer.setPrice(offer.getPrice());
-        existingOffer.setProperty(propertyRepository.findById(propertyId).orElse(null));
-        existingOffer.setUser(userRepository.findById(userId).orElse(null));
-        offerRepository.save(existingOffer);
+        existingOffer.setDescription(updatedOffer.getDescription());
+        existingOffer.setProperty(updatedOffer.getProperty());
+        existingOffer.setUser(updatedOffer.getUser());
+        Details details = detailsRepository.findById(existingOffer.getDetails().getId()).get();
+        details.setPrice(updatedOffer.getDetails().getPrice());
+        details.setDeadline(updatedOffer.getDetails().getDeadline());
+        details.setPrice(updatedOffer.getDetails().getPrice());
+        details.setDescription(updatedOffer.getDescription());
+        details.setOffer(existingOffer);
+        existingOffer.setDetails(updatedOffer.getDetails());
+        return offerRepository.save(existingOffer);
     }
-    @Override
+
     public void deleteOffer(Long id) {
-        offerRepository.deleteById(id);
+        Offer existingOffer = getOfferById(id);
+        offerRepository.delete(existingOffer);
     }
+
 }

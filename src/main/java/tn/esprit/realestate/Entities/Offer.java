@@ -1,9 +1,13 @@
 package tn.esprit.realestate.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table
@@ -20,13 +24,17 @@ public class Offer {
 
     private String description;
 
-    private String price;
-
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Property property;
 
-    @ManyToOne
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
+
+
+    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"offer", "details"})
+    private Details details;
+
 }
