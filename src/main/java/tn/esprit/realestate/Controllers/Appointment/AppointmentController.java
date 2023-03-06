@@ -47,9 +47,9 @@ public class AppointmentController {
         return appointmentService.getAppointmentById(id);
     }
 
-    @PostMapping("/{agentId}/{clientId}")
-    public ResponseEntity<String> addAppointment(@RequestBody Appointment appointment, @PathVariable long agentId, @PathVariable long clientId) {
-        return appointmentService.addAppointment(appointment, agentId, clientId);
+    @PostMapping("/{properyId}/{agentId}/{clientId}")
+    public ResponseEntity<String> addAppointment(@RequestBody Appointment appointment, @PathVariable long propertyId, @PathVariable long agentId, @PathVariable long clientId) {
+        return appointmentService.addAppointment(appointment, propertyId, agentId, clientId);
     }
 
     @GetMapping("/{id}/google-meet-link")

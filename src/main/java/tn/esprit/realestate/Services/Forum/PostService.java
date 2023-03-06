@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.realestate.Config.JwtService;
 import tn.esprit.realestate.Dto.Forum.PostDto;
 import tn.esprit.realestate.Entities.Forum.Attachment;
 import tn.esprit.realestate.Entities.Forum.Post;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,10 @@ public class PostService implements IPostService {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private JwtService jwtService;
+    /*@Autowired
+    private PostElasticsearchRepository postElasticsearchRepository;*/
 
     @Override
     public List<Post> getAllPosts() {
@@ -64,9 +70,14 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content, List<String> tagNames, Long authorId) throws IOException, MessagingException {
+    public ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content, List<String> tagNames) throws IOException, MessagingException {
         Post post = new Post();
-        User author = userRepository.findById(authorId).orElse(null);
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
+        User author = userRepository.findByEmail(userEmail).orElse(null);
         if (author == null) {
             return ResponseEntity.badRequest().body("Author not found");
         }
@@ -150,7 +161,7 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content, Optional<List<String>> tagNames, Optional<Long> authorId) throws IOException {
+    public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content, Optional<List<String>> tagNames) throws IOException {
         Post post = postRepository.findById(id).orElse(null);
         if (post == null) {
             return null;
@@ -169,13 +180,20 @@ public class PostService implements IPostService {
             }
             post.setTags(tags);
         }
-        if (authorId.isPresent()) {
-            User author = userRepository.findById(authorId.get()).orElse(null);
-            if (author == null) {
-                return null;
-            }
-            post.setAuthor(author);
+
+        final String authHeader = request.getHeader("Authorization");
+        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+            final String jwt;
+            final String userEmail;
+            jwt = authHeader.substring(7);
+            userEmail = jwtService.extractUsername(jwt);
+            User author = userRepository.findByEmail(userEmail).orElse(null);
+            if(Objects.equals(author.getId(), post.getAuthor().getId()))
+                post.setAuthor(author);
+        } else {
+            return null;
         }
+
         if (file.isPresent()) {
             String filename = StringUtils.cleanPath(file.get().getOriginalFilename());
             Attachment attachment = new Attachment();
@@ -289,4 +307,13 @@ public class PostService implements IPostService {
                         post.getAuthor().getId(), post.getAuthor().getUsername(), post.getTags()))
                 .collect(Collectors.toList());
     }
+
+    /*public List<Post> search(String searchTerm) {
+        SearchHits<Post> searchHits = postElasticsearchRepository.search(
+                new NativeSearchQueryBuilder()
+                        .withQuery(QueryBuilders.matchQuery("title", searchTerm))
+                        .build()
+        );
+        return searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
+    }*/
 }

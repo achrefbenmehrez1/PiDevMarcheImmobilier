@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Dto.Forum.PostDto;
 import tn.esprit.realestate.Entities.Forum.Post;
@@ -15,7 +16,10 @@ import tn.esprit.realestate.Repositories.Forum.TagRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 import tn.esprit.realestate.Services.Forum.PostService;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,13 +41,30 @@ public class PostController {
     @Autowired
     private HttpServletRequest request;
 
+    @GetMapping("/user/ip")
+    public String getUserIp(HttpServletRequest request) throws UnknownHostException {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null) {
+            ip = request.getRemoteAddr();
+        }
+
+        InetAddress inetAddress = InetAddress.getByName(ip);
+        String ipAddress = inetAddress.getHostAddress();
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://ip-api.com/json/" + ipAddress;
+        String result = restTemplate.getForObject(url, String.class);
+        System.out.println(result);
+
+        return "Your IP address is: " + ipAddress;
+    }
+
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestParam("file") Optional<MultipartFile> file,
                                         @RequestParam("title") String title,
                                         @RequestParam("content") String content,
-                                        @RequestParam("tags") List<String> tagNames,
-                                        @RequestParam("authorId") Long authorId) throws IOException, MessagingException {
-        return postService.createPost(file, title, content, tagNames, authorId);
+                                        @RequestParam("tags") List<String> tagNames) throws IOException, MessagingException {
+        return postService.createPost(file, title, content, tagNames);
     }
 
     @PutMapping("/approve/{postId}")
@@ -62,9 +83,8 @@ public class PostController {
     public Post updatePost(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
                            @RequestParam("title") Optional<String> title,
                            @RequestParam("content") Optional<String> content,
-                           @RequestParam("tags") Optional<List<String>> tagNames,
-                           @RequestParam("authorId") Optional<Long> authorId) throws IOException {
-        return postService.updatePost(id, file, title, content, tagNames, authorId);
+                           @RequestParam("tags") Optional<List<String>> tagNames) throws IOException {
+        return postService.updatePost(id, file, title, content, tagNames);
     }
 
     @DeleteMapping("/{id}")
@@ -117,5 +137,10 @@ public class PostController {
     public Post getPostById(@PathVariable Long id) {
         return postService.getPostById(id);
     }
+
+    /*@GetMapping("/search/{keyword}")
+    public List<Post> search(@PathVariable String keyword) {
+        return postService.search(keyword);
+    }*/
 }
 

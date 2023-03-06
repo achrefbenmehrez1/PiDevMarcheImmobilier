@@ -6,7 +6,7 @@ import tn.esprit.realestate.Entities.Appointment;
 import java.util.List;
 
 public interface IAppointmentService {
-    public ResponseEntity<String> addAppointment(Appointment appointment, long agentId, long clientId);
+    public ResponseEntity<String> addAppointment(Appointment appointment, long propertyId, long agentId, long clientId);
 
     public Appointment updateAppointment(Appointment appointment);
 

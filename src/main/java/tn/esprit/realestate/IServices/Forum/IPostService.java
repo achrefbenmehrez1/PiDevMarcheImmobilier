@@ -18,9 +18,9 @@ public interface IPostService {
 
     public void deletePost(Long id);
 
-    ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content, List<String> tagNames, Long authorId) throws IOException, MessagingException;
+    ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content, List<String> tagNames) throws IOException, MessagingException;
 
-    public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content, Optional<List<String>> tagNames, Optional<Long> authorId) throws IOException;
+    public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content, Optional<List<String>> tagNames) throws IOException;
 
     public List<Post> getPostsByAuthor(Long authorId);
 
