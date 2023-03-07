@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -85,32 +86,32 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUser(Long id, String email, String password, Role role, String username, String address, String phone, MultipartFile profileImage) throws IOException {
+    public User updateUser(Long id, Optional<String> email, Optional<String> password,Optional<Role> role, Optional<String> username, Optional<String> address, Optional<String> phone, Optional<MultipartFile> profileImage) throws IOException {
         User user =getUserById(id).get();
-        if (email != null) {
-            user.setEmail(email);
+        if (email.isPresent()) {
+            user.setEmail(email.get());
         }
-        if (password != null) {
-            user.setPassword(passwordEncoder.encode(password));
+        if (password.isPresent()) {
+            user.setPassword(passwordEncoder.encode(password.get()));
 
 
         }
-        if (role != null) {
-            user.setRole(role);
+        if (role .isPresent()) {
+            user.setRole(role.get());
         }
-        if (username != null) {
-            user.setUsername(username);
-        }
-
-        if (address != null) {
-            user.setAddress(address);
-        }
-        if (phone != null) {
-            user.setPhone(phone);
+        if (username .isPresent()) {
+            user.setUsername(username.get());
         }
 
+        if (address.isPresent()) {
+            user.setAddress(address.get());
+        }
+        if (phone .isPresent()) {
+            user.setPhone(phone.get());
+        }
 
-        String profileImagePath = storeProfileImage(profileImage);
+
+        String profileImagePath = storeProfileImage(profileImage.get());
         if (profileImagePath != null) {
             user.setProfileImagePath(profileImagePath);
         }
@@ -134,34 +135,29 @@ public class UserService implements IUserService {
         return userRepository.findByEmailOrPhoneOrUsername(userEmail).get();
     }
     @Override
-    public User updateUserByToken(@NonNull HttpServletRequest request, String email, String password,String username, String address, String phone, MultipartFile profileImage) throws IOException {
+    public User updateUserByToken(@NonNull HttpServletRequest request, Optional<String> email,Optional<String>password,Optional<String>username, Optional<String> address, Optional<String> phone, Optional<MultipartFile> profileImage) throws IOException {
         User user = getUserByToken(request);
-        if (email != null) {
-            user.setEmail(email);
+        if (email .isPresent()) {
+            user.setEmail(email.get());
         }
 
-            if (password != null) {
-                user.setPassword(passwordEncoder.encode(password));
+            if (password .isPresent()) {
+                user.setPassword(passwordEncoder.encode(password.get()));
 
 
             }
-            if (username != null) {
-                user.setUsername(username);
+            if (username .isPresent()) {
+                user.setUsername(username.get());
             }
-
-
-
-
-
-        if (address != null) {
-            user.setAddress(address);
+        if (address.isPresent()) {
+            user.setAddress(address.get());
         }
-        if (phone != null) {
-            user.setPhone(phone);
+        if (phone .isPresent()) {
+            user.setPhone(phone.get());
         }
 
 
-        String profileImagePath = storeProfileImage(profileImage);
+        String profileImagePath = storeProfileImage(profileImage.get());
         if (profileImagePath != null) {
             user.setProfileImagePath(profileImagePath);
         }
@@ -200,6 +196,14 @@ public class UserService implements IUserService {
             return p;
         });
         return users;
+    }
+    public void addUserfromoauth(OAuth2AuthenticationToken token) {
+        String username = token.getPrincipal().getAttribute("name");
+        String email = token.getPrincipal().getAttribute("email");
+        String pictureUrl = token.getPrincipal().getAttribute("picture");
+        User user = new User(username, email, Role.USER);
+        //user.setProfileImagePath(pictureUrl);
+        userRepository.save(user);
     }
 
     }

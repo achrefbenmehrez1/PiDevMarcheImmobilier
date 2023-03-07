@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private String address;
 
-    @Column(nullable = false,unique=true)
+    @Column(unique=true,nullable = true)
     private String phone;
 
 
@@ -71,6 +71,12 @@ public class User implements UserDetails {
 
         this.address = address;
         this.phone = phone;
+    }
+
+    public User(String username, String email, Role user) {
+        this.username = username;
+        this.email = email;
+        this.role = user;
     }
 
     @JsonIgnore

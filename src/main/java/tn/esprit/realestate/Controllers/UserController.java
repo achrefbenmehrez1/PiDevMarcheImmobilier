@@ -12,6 +12,8 @@ import tn.esprit.realestate.Services.User.UserService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -47,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping(value="/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<User> updateUser(@Valid @PathVariable Long id, @RequestParam(required = false) String email, @RequestParam(required = false) String password, @RequestParam(required = false) Role role, @RequestParam(required = false) String username,@RequestParam(required = false) String address,@RequestParam(required = false) String phone,@RequestParam(required = false) MultipartFile profileImage) throws IOException {
+    public ResponseEntity<User> updateUser(@Valid @PathVariable Long id, @RequestParam Optional<String> email, @RequestParam Optional<String> password, @RequestParam Optional<Role> role, @RequestParam Optional<String> username, @RequestParam Optional<String> address, @RequestParam Optional<String> phone, @RequestParam Optional< MultipartFile> profileImage) throws IOException {
 
         User updatedUser = userService.updateUser(id,email,password,role,username,address,phone,profileImage);
 

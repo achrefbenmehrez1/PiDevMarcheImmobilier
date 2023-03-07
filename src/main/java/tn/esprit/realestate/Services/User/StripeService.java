@@ -36,16 +36,26 @@ private final UserService userService;
 
 
 
-    public void upgradeToPremium(@NonNull HttpServletRequest request) throws StripeException {
+   // public void upgradeToPremium(@NonNull HttpServletRequest request) throws StripeException {
+        public void upgradeToPremium(@NonNull HttpServletRequest request,String number,Integer expMonth,Integer expYear,String cvc) throws StripeException {
         User user = userService.getUserByToken(request);
-        Token token = Token.create(Map.of(
+        /*Token token = Token.create(Map.of(
                 "card", Map.of(
                         "number","4242424242424242",
                         "exp_month","10",
                         "exp_year", 2028,
                         "cvc", "314"
                 )
-        ));
+        ));*/
+        Map<String, Object> card = new HashMap<>();
+        card.put("number", number);
+        card.put("exp_month", expMonth);
+        card.put("exp_year", expYear);
+        card.put("cvc", cvc);
+        Map<String, Object> params = new HashMap<>();
+        params.put("card", card);
+
+        Token token = Token.create(params);
         // Create a customer
         Map<String, Object> customerParams = new HashMap<>();
         customerParams.put("email", user.getEmail());
@@ -58,12 +68,12 @@ private final UserService userService;
                 "price_1MiK7kHuC3uyR4hUC1jzfC5P"
         );
         items.add(item1);
-        Map<String, Object> params = new HashMap<>();
-        params.put("customer", customer.getId());
-        params.put("items", items);
+        Map<String, Object> param = new HashMap<>();
+        param.put("customer", customer.getId());
+        param.put("items", items);
 
         Subscription subscription =
-                Subscription.create(params);
+                Subscription.create(param);
         // Update the user to Premium
         user.setPremium(true);
         userRepository.save(user);

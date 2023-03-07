@@ -20,13 +20,13 @@ public interface IUserService {
     public Optional<User> getUserByEmail(String email);
     User createUser(String email, String password, Role role, String username, String address, String phone, MultipartFile profileImage) throws IOException;
 
-    User updateUser(Long id, String email, String password, Role role, String username, String address, String phone, MultipartFile profileImage) throws IOException;
+    User updateUser(Long id ,Optional<String> email, Optional<String> password,Optional<Role> role, Optional<String> username, Optional<String> address, Optional<String> phone, Optional<MultipartFile > profileImage) throws IOException;
 
     public void deleteUser(Long id);
 
     User getUserByToken(@NonNull HttpServletRequest request);
 
-    User updateUserByToken(@NonNull HttpServletRequest request, String email, String password, String username, String address, String phone, MultipartFile profileImage) throws IOException;
+    User updateUserByToken(@NonNull HttpServletRequest request ,Optional<String> email,Optional<String>password,Optional<String>username, Optional<String> address, Optional<String> phone, Optional<MultipartFile> profileImage) throws IOException;
 
     List<User> getusers(Role role, String email, String username, String lastname, String address, String phone);
 }

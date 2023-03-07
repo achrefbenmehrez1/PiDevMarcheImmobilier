@@ -1,6 +1,7 @@
 package tn.esprit.realestate.Config;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,16 +13,20 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+    @Autowired
+    private CostumerOAuth2UserService customerOauth2UserService;
+    @Autowired
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,6 +40,18 @@ public class SecurityConfiguration {
                 .hasAnyAuthority("ADMIN")
                 .requestMatchers("/account/**")
                 .authenticated()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+               // .loginPage("/Accueil/Erreur")
+                .and()
+                .oauth2Login()
+                //.loginPage("/Accueil/Erreur")
+                .userInfoEndpoint()
+                .userService(customerOauth2UserService)
+                .and()
+                .successHandler(new OAuth2LoginSuccessHandler())
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -44,8 +61,7 @@ public class SecurityConfiguration {
                 .logout()
                 .logoutUrl("/auth/logout")
                 .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-        ;
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 
         return http.build();
     }
