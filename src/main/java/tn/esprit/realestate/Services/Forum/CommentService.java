@@ -2,13 +2,19 @@ package tn.esprit.realestate.Services.Forum;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Forum.*;
 import tn.esprit.realestate.Entities.User;
@@ -21,13 +27,11 @@ import tn.esprit.realestate.Repositories.UserRepository;
 import tn.esprit.realestate.Utils.FileUploadUtil;
 import tn.esprit.realestate.Utils.ProfanityFilter;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class CommentService implements ICommentService {
-
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -40,6 +44,8 @@ public class CommentService implements ICommentService {
     private JavaMailSender javaMailSender;
     @Autowired
     private AttachmentRepository attachmentRepository;
+    @Autowired
+    private Environment env;
 
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
@@ -54,7 +60,8 @@ public class CommentService implements ICommentService {
         }
     }
 
-    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException {
+    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long authorId)
+            throws MessagingException {
         Comment comment = new Comment();
         comment.setContent(content);
 
@@ -91,7 +98,7 @@ public class CommentService implements ICommentService {
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("achref.benmehrez@esprit.tn");
+        helper.setFrom(env.getProperty("spring.mail.username"));
         helper.setTo(postRepository.findById(comment.getPost().getId()).get().getAuthor().getEmail());
         helper.setSubject("A new comment has been added to your post");
         helper.setText("A new comment has been added to your post on Vendor.", true);
@@ -101,8 +108,8 @@ public class CommentService implements ICommentService {
         if (comment.isFlagged()) {
             String to = "achrefpgm@gmail.com";
             String subject = "A new comment has been flagged as Profanity";
-            String body = "A new comment with Id: " + comment.getId() + ", created by User " + comment.getAuthor().getEmail() + " , has been flagged on Vendor as Profanity.";
-
+            String body = "A new comment with Id: " + comment.getId() + ", created by User "
+                    + comment.getAuthor().getEmail() + " , has been flagged on Vendor as Profanity.";
             MimeMessage message2 = javaMailSender.createMimeMessage();
             MimeMessageHelper helper2 = new MimeMessageHelper(message2);
             helper2.setFrom("achref.benmehrez@esprit.tn");
@@ -147,7 +154,8 @@ public class CommentService implements ICommentService {
         return commentRepository.findTopNByOrderByCreatedAtDesc(count);
     }
 
-    public Comment updateComment(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId) {
+    public Comment updateComment(Long id, Optional<MultipartFile> file, Optional<String> content,
+            Optional<Long> authorId) {
         Comment comment = getCommentById(id);
         if (comment != null) {
             if (file.isPresent()) {
@@ -174,7 +182,7 @@ public class CommentService implements ICommentService {
                 comment.setAuthor(userRepository.findById(authorId.get()).get());
             }
 
-            if(ProfanityFilter.isProfanity(comment.getContent())){
+            if (ProfanityFilter.isProfanity(comment.getContent())) {
                 comment.setFlagged(true);
             } else {
                 comment.setFlagged(false);

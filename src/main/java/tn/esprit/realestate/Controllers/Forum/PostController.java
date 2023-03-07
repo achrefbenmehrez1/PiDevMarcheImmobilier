@@ -2,12 +2,21 @@ package tn.esprit.realestate.Controllers.Forum;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.detectlanguage.errors.APIError;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+
 import tn.esprit.realestate.Dto.Forum.PostDto;
 import tn.esprit.realestate.Entities.Forum.Post;
 import tn.esprit.realestate.Repositories.Forum.AttachmentRepository;
@@ -59,11 +68,26 @@ public class PostController {
         return "Your IP address is: " + ipAddress;
     }
 
+    @GetMapping("/send-email")
+    public String sendEmail() throws EmailException {
+        Email email = new SimpleEmail();
+        email.setHostName("smtp.gmail.com");
+        email.setSmtpPort(587);
+        email.setAuthenticator(new DefaultAuthenticator("achref.benmehrez@esprit.tn", "213JMT6076"));
+        email.setFrom("achref.benmehrez@esprit.tn");
+        email.setSubject("TestMail");
+        email.setMsg("This is a test mail ... :-)");
+        email.addTo("achref.benmehrez@esprit.tn");
+        email.send();
+        return "Email sent successfully";
+    }
+
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestParam("file") Optional<MultipartFile> file,
-                                        @RequestParam("title") String title,
-                                        @RequestParam("content") String content,
-                                        @RequestParam("tags") List<String> tagNames) throws IOException, MessagingException {
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("tags") List<String> tagNames)
+            throws IOException, MessagingException, EmailException, GeoIp2Exception, APIError {
         return postService.createPost(file, title, content, tagNames);
     }
 
@@ -81,9 +105,9 @@ public class PostController {
 
     @PutMapping("/{id}")
     public Post updatePost(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
-                           @RequestParam("title") Optional<String> title,
-                           @RequestParam("content") Optional<String> content,
-                           @RequestParam("tags") Optional<List<String>> tagNames) throws IOException {
+            @RequestParam("title") Optional<String> title,
+            @RequestParam("content") Optional<String> content,
+            @RequestParam("tags") Optional<List<String>> tagNames) throws IOException {
         return postService.updatePost(id, file, title, content, tagNames);
     }
 
@@ -108,8 +132,9 @@ public class PostController {
     }
 
     @GetMapping("/date")
-    public List<Post> getPostsByDateRange(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+    public List<Post> getPostsByDateRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         return postService.getPostsByDateRange(startDate, endDate);
     }
 
@@ -138,9 +163,10 @@ public class PostController {
         return postService.getPostById(id);
     }
 
-    /*@GetMapping("/search/{keyword}")
-    public List<Post> search(@PathVariable String keyword) {
-        return postService.search(keyword);
-    }*/
+    /*
+     * @GetMapping("/search/{keyword}")
+     * public List<Post> search(@PathVariable String keyword) {
+     * return postService.search(keyword);
+     * }
+     */
 }
-

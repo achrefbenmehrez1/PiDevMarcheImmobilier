@@ -1,5 +1,6 @@
 package tn.esprit.realestate.Entities.Forum;
 
+import com.detectlanguage.DetectLanguage;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -39,11 +40,11 @@ public class Post {
     private boolean approved;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "post"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "post" })
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -60,13 +61,23 @@ public class Post {
     @Column
     private boolean flagged = false;
 
-    /*@Transient
-    private final LanguageIdentifier languageIdentifier = new LanguageIdentifier("");
+    @Column
+    private Double latitude;
 
-    public String getLanguage() {
-        languageIdentifier.setText(content);
-        return languageIdentifier.getLanguage();
-    }*/
+    @Column
+    private Double longitude;
+
+    @Column
+    private String country;
+
+    @Column
+    private String city;
+
+    @Column
+    private String state;
+
+    @Column
+    private String language;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -76,4 +87,3 @@ public class Post {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 }
-

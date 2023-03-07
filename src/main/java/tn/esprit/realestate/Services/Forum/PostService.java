@@ -1,15 +1,28 @@
 package tn.esprit.realestate.Services.Forum;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.detectlanguage.DetectLanguage;
+import com.detectlanguage.Result;
+import com.detectlanguage.errors.APIError;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CityResponse;
+
 import tn.esprit.realestate.Config.JwtService;
 import tn.esprit.realestate.Dto.Forum.PostDto;
 import tn.esprit.realestate.Entities.Forum.Attachment;
@@ -26,6 +39,7 @@ import tn.esprit.realestate.Utils.ProfanityFilter;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +49,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class PostService implements IPostService {
-
     @Autowired
     private PostRepository postRepository;
 
@@ -51,8 +64,13 @@ public class PostService implements IPostService {
     private JavaMailSender javaMailSender;
     @Autowired
     private JwtService jwtService;
-    /*@Autowired
-    private PostElasticsearchRepository postElasticsearchRepository;*/
+    @Autowired
+    private Environment env;
+
+    /*
+     * @Autowired
+     * private PostElasticsearchRepository postElasticsearchRepository;
+     */
 
     @Override
     public List<Post> getAllPosts() {
@@ -70,7 +88,8 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content, List<String> tagNames) throws IOException, MessagingException {
+    public ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content,
+            List<String> tagNames) throws IOException, MessagingException, GeoIp2Exception, APIError {
         Post post = new Post();
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
@@ -81,7 +100,8 @@ public class PostService implements IPostService {
         if (author == null) {
             return ResponseEntity.badRequest().body("Author not found");
         }
-        if (ProfanityFilter.isProfanity(title) || ProfanityFilter.isProfanity(content) || tagNames.stream().anyMatch(ProfanityFilter::isProfanity)) {
+        if (ProfanityFilter.isProfanity(title) || ProfanityFilter.isProfanity(content)
+                || tagNames.stream().anyMatch(ProfanityFilter::isProfanity)) {
             post.setFlagged(true);
         }
         String ip = request.getHeader("X-Forwarded-For");
@@ -92,21 +112,23 @@ public class PostService implements IPostService {
         String dbLocation = "src/main/resources/static/GeoLite2-City.mmdb";
 
         File database = new File(dbLocation);
-        /*DatabaseReader dbReader = new DatabaseReader.Builder(database)
+
+        DatabaseReader dbReader = new DatabaseReader.Builder(database)
                 .build();
 
         InetAddress ipAddress = InetAddress.getByName(ip);
         CityResponse response = dbReader.city(ipAddress);
 
-        String countryName = response.getCountry().getName();
-        String cityName = response.getCity().getName();
-        String postal = response.getPostal().getCode();
-        String state = response.getLeastSpecificSubdivision().getName();
+        post.setLatitude(response.getLocation().getLatitude());
+        post.setLongitude(response.getLocation().getLongitude());
+        post.setCountry(response.getCountry().getName());
+        post.setCity(response.getCity().getName());
+        post.setState(response.getLeastSpecificSubdivision().getName());
 
-        System.out.println("Country: " + countryName);
-        System.out.println("City: " + cityName);
-        System.out.println("Postal: " + postal);
-        System.out.println("State: " + state);*/
+        DetectLanguage.apiKey = "10b6d005b806a6496c79c340c1c2d4c7";
+        String language = DetectLanguage.simpleDetect(content);
+
+        post.setLanguage(language);
 
         post.setTitle(title);
         post.setContent(content);
@@ -147,13 +169,15 @@ public class PostService implements IPostService {
         if (post.isFlagged()) {
             String to = "achrefpgm@gmail.com";
             String subject = "Post flagged";
-            String message = "Post with id " + post.getId() + " , created by User " + post.getAuthor().getEmail() + " has been flagged with Profanity content";
+            String message = "Post with id " + post.getId() + " , created by User " + post.getAuthor().getEmail()
+                    + " has been flagged with Profanity content";
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(javaMailSender.createMimeMessage());
-            mimeMessageHelper.setFrom("achref.benmehrez@esprit.tn");
+            mimeMessageHelper.setFrom(env.getProperty("spring.mail.username"));
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(message);
             javaMailSender.send(mimeMessageHelper.getMimeMessage());
+
             return ResponseEntity.badRequest().body("Profanity is not allowed");
         }
 
@@ -161,7 +185,8 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content, Optional<List<String>> tagNames) throws IOException {
+    public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content,
+            Optional<List<String>> tagNames) throws IOException {
         Post post = postRepository.findById(id).orElse(null);
         if (post == null) {
             return null;
@@ -182,13 +207,13 @@ public class PostService implements IPostService {
         }
 
         final String authHeader = request.getHeader("Authorization");
-        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             final String jwt;
             final String userEmail;
             jwt = authHeader.substring(7);
             userEmail = jwtService.extractUsername(jwt);
             User author = userRepository.findByEmail(userEmail).orElse(null);
-            if(Objects.equals(author.getId(), post.getAuthor().getId()))
+            if (Objects.equals(author.getId(), post.getAuthor().getId()))
                 post.setAuthor(author);
         } else {
             return null;
@@ -212,10 +237,10 @@ public class PostService implements IPostService {
             post.setAttachment(attachment);
         }
 
-        if(ProfanityFilter.isProfanity(post.getTitle()) || ProfanityFilter.isProfanity(post.getContent()) || post.getTags().stream().anyMatch(tag -> ProfanityFilter.isProfanity(tag.getName()))){
+        if (ProfanityFilter.isProfanity(post.getTitle()) || ProfanityFilter.isProfanity(post.getContent())
+                || post.getTags().stream().anyMatch(tag -> ProfanityFilter.isProfanity(tag.getName()))) {
             post.setFlagged(true);
-        }
-        else{
+        } else {
             post.setFlagged(false);
         }
 
@@ -290,12 +315,10 @@ public class PostService implements IPostService {
             postRepository.save(post);
         });
 
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("achref.benmehrez@esprit.tn");
-        helper.setTo(postRepository.findById(postId).get().getAuthor().getEmail());
-        helper.setSubject("Your Post has been approved");
-        helper.setText("Your Post on Vendor has been approved, thanks for being patient", true);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(postRepository.findById(postId).get().getAuthor().getEmail());
+        message.setSubject("Your Post has been approved");
+        message.setText("Your Post on Vendor has been approved, thanks for being patient");
         javaMailSender.send(message);
     }
 
@@ -308,12 +331,15 @@ public class PostService implements IPostService {
                 .collect(Collectors.toList());
     }
 
-    /*public List<Post> search(String searchTerm) {
-        SearchHits<Post> searchHits = postElasticsearchRepository.search(
-                new NativeSearchQueryBuilder()
-                        .withQuery(QueryBuilders.matchQuery("title", searchTerm))
-                        .build()
-        );
-        return searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
-    }*/
+    /*
+     * public List<Post> search(String searchTerm) {
+     * SearchHits<Post> searchHits = postElasticsearchRepository.search(
+     * new NativeSearchQueryBuilder()
+     * .withQuery(QueryBuilders.matchQuery("title", searchTerm))
+     * .build()
+     * );
+     * return
+     * searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
+     * }
+     */
 }

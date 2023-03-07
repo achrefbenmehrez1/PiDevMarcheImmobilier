@@ -1,6 +1,8 @@
 package tn.esprit.realestate.Controllers.Forum;
 
 import jakarta.mail.MessagingException;
+
+import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +34,15 @@ public class ReplyController {
 
     @PostMapping
     public ResponseEntity<String> createReply(@RequestParam("file") Optional<MultipartFile> file,
-                                              @RequestParam("content") String content,
-                                              @RequestParam("authorId") Long authorId) throws MessagingException {
+            @RequestParam("content") String content,
+            @RequestParam("authorId") Long authorId) throws MessagingException, EmailException {
         return replyService.createReply(file, content, authorId);
     }
 
     @PutMapping("/{id}")
     public Reply updateReply(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
-                             @RequestParam("content") Optional<String> content,
-                             @RequestParam("authorId") Optional<Long> authorId) {
+            @RequestParam("content") Optional<String> content,
+            @RequestParam("authorId") Optional<Long> authorId) {
         return replyService.updateReply(id, file, content, authorId);
     }
 
@@ -60,8 +62,9 @@ public class ReplyController {
     }
 
     @GetMapping("/date")
-    public List<Reply> getRepliesByDateRange(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-                                             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+    public List<Reply> getRepliesByDateRange(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         return replyService.getRepliesByDateRange(startDate, endDate);
     }
 
@@ -70,4 +73,3 @@ public class ReplyController {
         return replyService.getLatestReplies(count);
     }
 }
-

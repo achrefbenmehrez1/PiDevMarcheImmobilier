@@ -1,5 +1,6 @@
 package tn.esprit.realestate.Controllers.Forum;
 
+import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +28,15 @@ public class CommentController {
 
     @PostMapping("")
     public ResponseEntity<?> createComment(@RequestParam("file") Optional<MultipartFile> file,
-                                                @RequestParam("content") String content,
-                                                @RequestParam("authorId") Long authorId) throws jakarta.mail.MessagingException {
+            @RequestParam("content") String content,
+            @RequestParam("authorId") Long authorId) throws jakarta.mail.MessagingException, EmailException {
         return commentService.createComment(file, content, authorId);
     }
 
     @PutMapping("/{id}")
     public Comment updateComment(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
-                                 @RequestParam("content") Optional<String> content,
-                                 @RequestParam("authorId") Optional<Long> authorId) {
+            @RequestParam("content") Optional<String> content,
+            @RequestParam("authorId") Optional<Long> authorId) {
         return commentService.updateComment(id, file, content, authorId);
     }
 
@@ -55,8 +56,9 @@ public class CommentController {
     }
 
     @GetMapping("/byDate")
-    public List<Comment> getCommentsByDateRange(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+    public List<Comment> getCommentsByDateRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         return commentService.getCommentsByDateRange(startDate, endDate);
     }
 

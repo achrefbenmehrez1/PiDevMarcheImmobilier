@@ -1,13 +1,19 @@
 package tn.esprit.realestate.Services.Forum;
 
 import jakarta.mail.MessagingException;
+
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.realestate.Entities.Forum.Attachment;
 import tn.esprit.realestate.Entities.Forum.Reply;
@@ -30,13 +36,13 @@ public class ReplyService implements IReplyService {
     @Autowired
     private ReplyRepository replyRepository;
     @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private JavaMailSender javaMailSender;
     @Autowired
     private AttachmentRepository attachmentRepository;
+    @Autowired
+    private Environment env;
 
     public List<Reply> getAllReplies() {
         return replyRepository.findAll();
@@ -51,7 +57,8 @@ public class ReplyService implements IReplyService {
         }
     }
 
-    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException {
+    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long authorId)
+            throws MessagingException {
         Reply reply = new Reply();
         reply.setContent(content);
 
@@ -87,13 +94,15 @@ public class ReplyService implements IReplyService {
         if (reply.isFlagged()) {
             String to = "achrefpgm@gmail.com";
             String subject = "Reply flagged";
-            String message = "Reply with id " + reply.getId() + " , created by User " + reply.getAuthor().getEmail() + " has been flagged with Profanity content";
+            String message = "Reply with id " + reply.getId() + " , created by User " + reply.getAuthor().getEmail()
+                    + " has been flagged with Profanity content";
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(javaMailSender.createMimeMessage());
-            mimeMessageHelper.setFrom("achref.benmehrez@esprit.tn");
+            mimeMessageHelper.setFrom(env.getProperty("spring.mail.username"));
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(message);
             javaMailSender.send(mimeMessageHelper.getMimeMessage());
+
             return ResponseEntity.badRequest().body("Profanity is not allowed");
         }
 
