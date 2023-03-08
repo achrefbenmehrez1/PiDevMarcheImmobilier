@@ -1,17 +1,26 @@
 package tn.esprit.realestate.Config;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -34,7 +43,7 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers( "/auth/**")
+                .requestMatchers( "/auth/**","/OTP/**")
                 .permitAll()
                 .requestMatchers("/users/**")
                 .hasAnyAuthority("ADMIN")
@@ -43,18 +52,26 @@ public class SecurityConfiguration {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin()
-               // .loginPage("/Accueil/Erreur")
-                .and()
+
+
+                //.formLogin()
+                //.loginPage("/Accueil/Erreur")
+
                 .oauth2Login()
                 //.loginPage("/Accueil/Erreur")
                 .userInfoEndpoint()
                 .userService(customerOauth2UserService)
                 .and()
-                .successHandler(new OAuth2LoginSuccessHandler())
+                .successHandler(oAuth2LoginSuccessHandler)
+
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+
+                .exceptionHandling()
+                .accessDeniedHandler(new CustomAccessDeniedHandler()) // gestionnaire pour l'erreur 403
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -65,5 +82,21 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+    private class CustomAccessDeniedHandler implements AccessDeniedHandler {
+        @Override
+        public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, exception.getMessage());
+        }
+    }
+
+    // Classe privée pour gérer les erreurs d'authentification (401)
+    private class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+        @Override
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+        }
+    }
+
 }
+
 

@@ -39,10 +39,8 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             System.out.println("User already exists");
         }
         super.onAuthenticationSuccess(request, response, authentication);
+
+
     }
-    protected String determineTargetUrl(Authentication authentication) {
-        // Determine target URL based on the user's authentication details
-        // For example, you might check the user's authorities to see if they have access to a certain page
-        return "{baseUrl}/Accueil";
-    }
+
 }

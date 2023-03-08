@@ -2,14 +2,11 @@ package tn.esprit.realestate.Auth;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.realestate.Services.User.StripeService;
+import tn.esprit.realestate.Dto.AuthenticationRequest;
+import tn.esprit.realestate.Dto.AuthenticationResponse;
+import tn.esprit.realestate.Dto.RegisterRequest;
 
 @RestController
 @RequestMapping("/auth")

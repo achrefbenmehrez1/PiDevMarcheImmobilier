@@ -31,7 +31,7 @@ private final StripeService stripeService;
     }
     @PutMapping(value="/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public User updateProfile(@NonNull HttpServletRequest request, @RequestParam Optional <String> email, @RequestParam Optional <String> password, @RequestParam Optional <String> username, @RequestParam Optional <String> address, @RequestParam Optional <String> phone, @RequestParam Optional <MultipartFile> profileImage) throws IOException {
-     return userService.updateUserByToken(request, email, password, username, address, phone, profileImage);
+     return userService.updateUserByToken(request, email, password, username, address,phone, profileImage);
 
     }
     @PostMapping(value="/premium",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
