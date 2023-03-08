@@ -50,11 +50,12 @@ public interface IAdvertisementService {
                                                  MultipartFile photo) throws IOException;
 
  */
-    //public List<Advertisement> getAllAds();
 
     // DTO
     //public Page<Advertisement> getAllAds(int pageNumber, int pageSize);
     public Page<AdvertisementDto> getAllAds(int pageNumber, int pageSize);
+    public Page<AdvertisementDto> getAdsNotPremium(int pageNumber, int pageSize);
+
 
     //public List<Advertisement> getUserAds(@NonNull HttpServletRequest request);
     public Page<AdvertisementDto> getUserAds(@NonNull HttpServletRequest request, int pageNumber, int pageSize);
@@ -66,6 +67,14 @@ public interface IAdvertisementService {
                                       Double maxPrice, Double minPrice,
                                       Double minSize, Double maxSize,
                                       int pageNumber, int pageSize);
+
+    public Page<AdvertisementDto> SearchNotScrapedAds(TypeAd typeAd, Type typeProp,
+                                                      String region,String ville,
+                                                      Integer rooms,
+                                                      Boolean parking, Boolean garage,
+                                                      Double maxPrice, Double minPrice,
+                                                      Double minSize, Double maxSize,
+                                                      int pageNumber, int pageSize);
 
     //public List<Advertisement> getScrappedAds() throws IOException;
 
@@ -81,4 +90,5 @@ public interface IAdvertisementService {
 
     //to know how many poeple liked your Ad
     public List<User> consultingFavorite(HttpServletRequest request, Long idAd);
+
 }

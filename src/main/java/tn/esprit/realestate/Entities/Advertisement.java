@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Entity
 @Table
 @Getter
@@ -22,6 +26,9 @@ public class Advertisement {
 
     @Column
     private Double price;
+
+    @Column
+    private LocalDateTime created_at;
 
     @Transient
     private double oldPrice;
@@ -43,6 +50,9 @@ public class Advertisement {
     @Column
     private boolean scraped;
 
+    @Transient
+    private String currency;
+
     @ManyToOne
     @JsonIgnore
     private User user;
@@ -56,6 +66,7 @@ public class Advertisement {
         this.price=price;
         this.description=description;
         this.typeAd=typeAd;
+        this.created_at= LocalDateTime.now();
 
     }
 

@@ -22,5 +22,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 
     Page<Advertisement> findByScrapedFalse(Pageable pageable);
 
+    List<Advertisement> findByScrapedFalse();
+
+    Page<Advertisement> findByScrapedFalse(Specification<Advertisement> spec, Pageable pageable);
+
 
 }

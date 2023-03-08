@@ -125,6 +125,11 @@ public class AdvertisementController {
                                             @RequestParam(defaultValue = "10") int pageSize){
         return advertisementService.getAllAds(pageNumber,pageSize);
     }
+    @GetMapping("/getAdsNotPremium")
+    public Page<AdvertisementDto> getAdsNotPremium(@RequestParam(defaultValue = "0")int pageNumber,
+                                                   @RequestParam(defaultValue = "10")int pageSize){
+        return  advertisementService.getAdsNotPremium(pageNumber,pageSize);
+    }
 
 
     //DTO
@@ -161,7 +166,27 @@ public class AdvertisementController {
                                       @RequestParam(defaultValue = "0")int pageNumber,
                                       @RequestParam(defaultValue = "10")int pageSize)
     {
-        return advertisementService.getAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,minSize,maxSize,pageNumber,pageSize);
+        return advertisementService.getAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,
+                minSize,maxSize,pageNumber,pageSize);
+    }
+
+    //Search not scraped ADS
+    @GetMapping("/searchNotScraped")
+    public Page<AdvertisementDto> SearchNotScrapedAds(@RequestParam(value="typeAd",required = false) TypeAd typeAd,
+                                                      @RequestParam(value="typeProp",required = false) Type typeProp,
+                                                      @RequestParam(value="region",required = false) String region,
+                                                      @RequestParam(value="ville",required = false)String ville,
+                                                      @RequestParam(value="rooms",required = false) Integer rooms,
+                                                      @RequestParam(value="parking",required = false) Boolean parking,
+                                                      @RequestParam(value="garage",required = false) Boolean garage,
+                                                      @RequestParam(value="maxPrice",required = false)Double maxPrice,
+                                                      @RequestParam(value="minPrice",required = false)Double minPrice,
+                                                      @RequestParam(value="minSize",required = false) Double minSize,
+                                                      @RequestParam(value="maxSize",required = false) Double maxSize,
+                                                      @RequestParam(defaultValue = "0")int pageNumber,
+                                                      @RequestParam(defaultValue = "10")int pageSize){
+        return  advertisementService.SearchNotScrapedAds(typeAd,typeProp,region,ville,rooms,parking,garage,maxPrice,minPrice,
+                minSize,maxSize,pageNumber,pageSize);
     }
 
     @GetMapping("/getAdsByUsersLocation")
@@ -196,6 +221,7 @@ public class AdvertisementController {
     public List<User> consultingFavorite(HttpServletRequest request,  @PathVariable(value = "id") Long idAd){
         return advertisementService.consultingFavorite(request,idAd);
     }
+
 
 
 
