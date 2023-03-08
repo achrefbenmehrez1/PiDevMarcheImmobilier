@@ -695,7 +695,7 @@ public class AdvertisementService implements IAdvertisementService {
             Context thymeleafContext = new Context();
 
 
-            thymeleafContext.setVariable("ownerName", ad.getUser().getFirstname()+ " " + ad.getUser().getLastname());
+            thymeleafContext.setVariable("ownerName", ad.getUser().getUsername());
             thymeleafContext.setVariable("senderEmail", senderMail);
             thymeleafContext.setVariable("message", message);
 

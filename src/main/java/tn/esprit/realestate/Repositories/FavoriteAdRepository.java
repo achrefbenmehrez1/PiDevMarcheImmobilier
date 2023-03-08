@@ -1,10 +1,9 @@
 package tn.esprit.realestate.Repositories;
 
-import jakarta.jws.soap.SOAPBinding;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import tn.esprit.realestate.Entities.Advertisement;
-import tn.esprit.realestate.Entities.Details;
 import tn.esprit.realestate.Entities.FavoriteAd;
 import tn.esprit.realestate.Entities.User;
 

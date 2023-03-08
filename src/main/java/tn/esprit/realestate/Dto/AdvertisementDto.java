@@ -43,13 +43,13 @@ public class AdvertisementDto {
 
 
     // user's info
-    private String firstname;
+    private String username;
 
-    private String lastname;
+
 
     public AdvertisementDto fromEntityToDTO(Advertisement advertisement){
-        String firstName = advertisement.getUser() != null ? advertisement.getUser().getFirstname() : null;
-        String lastName = advertisement.getUser() != null ? advertisement.getUser().getLastname() : null;
+        String firstName = advertisement.getUser() != null ? advertisement.getUser().getUsername() : null;
+
         String newPrice;
         if(advertisement.getCurrency()==null){
              newPrice=advertisement.getPrice().toString();
@@ -67,8 +67,7 @@ public class AdvertisementDto {
                 .foreignAdUrl(advertisement.getForeignAdUrl())
                 .scraped(advertisement.isScraped())
                 .property(new PropertyDto().fromEntityToDTO(advertisement.getProperty()))
-                .firstname(firstName)
-                .lastname(lastName)
+                .username(firstName)
                 .created_at(advertisement.getCreated_at())
                 .build();
 

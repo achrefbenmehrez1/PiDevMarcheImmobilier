@@ -1,5 +1,5 @@
 package tn.esprit.realestate.Controllers;
-import jakarta.mail.MessagingException;
+import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -199,7 +199,7 @@ public class AdvertisementController {
     @PostMapping("/{id}/contact")
     public ResponseEntity<?> contactAdOwner(@PathVariable(value = "id") long id,
                                             @RequestParam(value="message")String message,
-                                            HttpServletRequest request) throws MessagingException {
+                                            HttpServletRequest request) throws MessagingException, jakarta.mail.MessagingException {
         return advertisementService.contactAdOwner(id,message,request);
     }
     @PostMapping("/addFavorite/{id}")
