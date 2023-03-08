@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>My Email Template</title>
+    <style th:inline="text">
+        /* Add your styles here */
+        header {
+            background-color: darkred;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            background-color: darkred;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            padding: 0 10px;
+        }
+
+        body {
+            background-color: white;
+            color: black;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        p:first-of-type {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+
+
+    </style>
+
+</head>
+<body>
+<header>
+    <!--
+
+    <img th:src="|data:image/png;base64,${logoData}|" alt="Logo"/> -->
+
+    <h1 style="text-align: center;margin-top: 5px;font-weight: bold; color:white">Vendor : To each their home</h1>
+</header>
+
+<div style="padding: 20px;">
+    <p style="font-size: 18px;">Dear <span th:text="${ownerName}" style="font-weight: bold;"></span>,</p>
+    <p style="font-size: 16px;,font-weight: bold;"><span th:text="${senderEmail}"></span> wants to contact you about your advertisement. This is the message :</p>
+    <p style="font-size: 16px;"><span th:text="${message}"></span></p>
+</div>
+<footer style="background-color: darkred;">
+    <p style="margin: 0; color: white;">© 2023 To Each Their Home. All rights reserved.</p><br>
+    <p style="margin: 0; color: white; font-size: 12px;">This email was sent to <span th:text="${ownerName}" style="font-weight: bold;"></span>.</p>
+</footer>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package tn.esprit.realestate.Entities;
 
 
+        import java.util.ArrayList;
         import java.util.List;
 
         import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,6 +64,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy ="user",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Advertisement> advertisements;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<FavoriteAd> favorites ;
 
     public User(String email, String password, Role role, String firstname, String lastname, String address, String phone) {
         this.email = email;

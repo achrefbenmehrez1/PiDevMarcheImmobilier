@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class Advertisement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +22,9 @@ public class Advertisement {
 
     @Column
     private Double price;
+
+    @Transient
+    private double oldPrice;
 
 
     @Column(length = 5000)

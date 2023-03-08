@@ -13,13 +13,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AdvertisementRepository extends JpaRepository<Advertisement, Long>, JpaSpecificationExecutor<Advertisement> {
-    public List<Advertisement> findByUser(User user);
+    //public List<Advertisement> findByUser(User user);
     public Optional<Advertisement> findByForeignAdUrl(String foreignAdUrl);
 
     Page<Advertisement> findByUser(User user, Pageable pageable);
     Page<Advertisement> findAll(Specification<Advertisement> spec, Pageable pageable);
+    Page<Advertisement> findAll(Pageable pageable);
 
-    Page<Advertisement> findByScrapedFalse();
+    Page<Advertisement> findByScrapedFalse(Pageable pageable);
 
 
 }
