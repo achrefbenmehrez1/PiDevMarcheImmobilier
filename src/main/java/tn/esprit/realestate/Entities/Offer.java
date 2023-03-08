@@ -27,7 +27,7 @@ public class Offer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Property property;
-
+    private Boolean participate = false;
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
@@ -36,5 +36,8 @@ public class Offer {
     @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"offer", "details"})
     private Details details;
+    @OneToMany(mappedBy = "offer")
+    private List<OfferParticipate> offerParticipates;
+
 
 }

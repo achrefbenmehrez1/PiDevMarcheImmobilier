@@ -3,18 +3,26 @@ package tn.esprit.realestate.Controllers;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.realestate.Entities.Details;
 import tn.esprit.realestate.Entities.Offer;
+import tn.esprit.realestate.Entities.OfferDto;
+import tn.esprit.realestate.Entities.User;
+import tn.esprit.realestate.Repositories.ParticipateRepository;
 import tn.esprit.realestate.Services.Appointment.Offer.DetailsService;
+import tn.esprit.realestate.Services.Appointment.Offer.EmailSenderService;
 import tn.esprit.realestate.Services.Appointment.Offer.OfferService;
 import tn.esprit.realestate.Services.Appointment.Offer.PDFGeneratorService;
 
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/offers")
@@ -31,17 +39,18 @@ public class OfferController {
     public OfferController(PDFGeneratorService pdfGeneratorService) {
         this.pdfGeneratorService = pdfGeneratorService;
     }
-   @GetMapping("/pdf/generate/{id}")
-    public  void generatePDF(@PathVariable Long id ,HttpServletResponse response) throws IOException {
+
+    @GetMapping("/pdf/generate/{id}")
+    public void generatePDF(@PathVariable Long id, HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
-        String currentDateTime=dateFormat.format(new Date());
+        String currentDateTime = dateFormat.format(new Date());
 
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=pdf_" + currentDateTime + ".pdf";
         response.setHeader(headerKey, headerValue);
 
-        this.pdfGeneratorService.export(id,response);
+        this.pdfGeneratorService.export(id, response.getOutputStream());
     }
 
     @GetMapping("")
@@ -77,7 +86,7 @@ public class OfferController {
 
     @GetMapping("/{offerId}/details/{id}")
     public Details getDetailsById(@PathVariable Long offerId, @PathVariable Long id) {
-        return detailsService.getDetailsById(offerId,id);
+        return detailsService.getDetailsById(offerId, id);
     }
 
     @PostMapping("/details")
@@ -91,9 +100,59 @@ public class OfferController {
     }
 
     @DeleteMapping("/{offerId}/details/{id}")
-    public void deleteDetails(@PathVariable Long offerId ,@PathVariable Long id) {
+    public void deleteDetails(@PathVariable Long offerId, @PathVariable Long id) {
         detailsService.deleteDetails(offerId, id);
     }
+
+    @PutMapping("participate/{idoffre}")
+    public ResponseEntity<?> markOfferAsParticipate(@PathVariable Long idoffre) {
+        offerService.markOfferAsParticipate(idoffre);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("findAlldto")
+    public ResponseEntity<List<OfferDto>> retrieveAllOffresdto() {
+        return ResponseEntity.ok(offerService.retrieveAllOffresdto());
+    }
+    @DeleteMapping("/remove-offre/{idoffre}/{id}")
+    public void removeOffre(@PathVariable("idoffre") Long idoffre,@PathVariable("id") Long id) {
+        offerService.removeOffre(idoffre,id);
+    }
+   /* @Autowired
+    private ParticipateRepository participateRepository;*/
+   /* @GetMapping("/{offerId}")
+    public List<User> getClientsForOffer(@PathVariable Long offerId)
+    {
+        List<User> users = participateRepository.findByOfferId(offerId);
+        return users;
+    }*/
+
+
+   /* @GetMapping("/offers/participate")
+    public ResponseEntity<List<Offer>> getparticipateOffers() {
+        List<Offer> interesseOffers = offerService.getparticipateOffers();
+        return ResponseEntity.ok(interesseOffers);
+    }*/
+    @Autowired
+    EmailSenderService emailSenderService;
+    @PostMapping("/send_email")
+    public String sendEmail(@RequestBody Map<String, String> postObject) throws IOException {
+        OutputStream pdf = new ByteArrayOutputStream();
+        pdf.close();
+        this.pdfGeneratorService.export(25L, pdf);
+        emailSenderService.sendEmail(postObject.get("fromEmail"),
+                postObject.get("toEMail"),
+                postObject.get("subject"),
+                postObject.get("body"),
+                new ByteArrayInputStream(((ByteArrayOutputStream)pdf).toByteArray()));
+    return "email sent";
+
+    }
+
+
+
+
+
 
 
 }

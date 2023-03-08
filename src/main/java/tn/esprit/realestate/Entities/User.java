@@ -34,4 +34,5 @@ public class User {
 
     @ManyToOne
     private Agency agency;
+
 }

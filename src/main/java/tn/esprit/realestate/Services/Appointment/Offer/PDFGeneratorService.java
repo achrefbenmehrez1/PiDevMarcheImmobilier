@@ -19,6 +19,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 
@@ -42,7 +43,7 @@ public class PDFGeneratorService {
 
 
 
-     public void export(Long id,HttpServletResponse response) throws IOException {
+     public void export(Long id, OutputStream outputStream) throws IOException {
 
 
         //create docc
@@ -50,7 +51,7 @@ public class PDFGeneratorService {
 
         Document document = new Document(PageSize.A4);
 
-         PdfWriter.getInstance(document,response.getOutputStream());
+         PdfWriter.getInstance(document,outputStream);
         FileOutputStream pdfOutputFile = new FileOutputStream("./sample1.pdf");
        Offer offer = offerRepository.findById(id).get();
 
@@ -61,22 +62,6 @@ public class PDFGeneratorService {
 
         final PdfWriter pdfWriter = PdfWriter.getInstance(document, pdfOutputFile);
 
-        /* Rectangle header = new Rectangle(30f, 30f, PageSize.A4.getRight(30f), 140f);
-         header.setBorder(Rectangle.BOX);
-         header.setBorderColor(Color.RED);
-         header.setBorderWidth(1f);
-         header.setTop(PageSize.A4.getTop(30f));
-         header.setBottom(PageSize.A4.getTop(180f));*/
-
-
-
-
-        /*Rectangle footer= new Rectangle(30f, 30f, PageSize.A4.getRight(30f), 140f);
-        footer.setBorder(Rectangle.BOX);
-        footer.setBorderColor(Color.BLACK);
-        footer.setBorderWidth(2f);
-        Font fontTitle1= FontFactory.getFont(FontFactory.HELVETICA_BOLD);
-        fontTitle1.setSize(13);*/
 
         Font fontTitle= FontFactory.getFont(FontFactory.HELVETICA_BOLD);
         fontTitle.setSize(13);
@@ -84,35 +69,24 @@ public class PDFGeneratorService {
 
 
 
-        pdfWriter.setPageEvent(new PdfPageEventHelper()); /*{
-             @Override
-             public void onEndPage(PdfWriter writer, Document document) {
-                  PdfContentByte cb = writer.getDirectContent();
-                  //cb.rectangle(header);
-
-
-                  cb.rectangle(footer);
-             }
-        });*/
-
+        pdfWriter.setPageEvent(new PdfPageEventHelper());
         document.open();
 
         Image jpg = Image.getInstance("test.png");
-        jpg.setAlignment(jpg.ALIGN_LEFT);
+        jpg.setAlignment(jpg.ALIGN_CENTER);
         jpg.scaleAbsolute(100,90);
 
 
 
 
-        //jpg.setBorderWidth(50);
 
 
         Paragraph paragraph = new Paragraph("OFFER",fontTitle);
-    paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+        paragraph.setAlignment(Paragraph.ALIGN_CENTER);
 
-        Font fontParagraph = FontFactory.getFont(FontFactory.HELVETICA);
-        fontParagraph.setSize(10);
-        fontParagraph.setColor(Color.red);
+         Font fontParagraph = FontFactory.getFont(FontFactory.HELVETICA);
+         fontParagraph.setSize(10);
+         fontParagraph.setColor(Color.red);
          Paragraph footer1 = new Paragraph(description,fontTitle);
          footer1.setAlignment(Paragraph.ALIGN_BOTTOM);
 
@@ -127,21 +101,16 @@ public class PDFGeneratorService {
 
 
 
-       // Paragraph footer1 = new Paragraph("aaaaa",fontTitle);
-        //footer1.setAlignment(Paragraph.ALIGN_BOTTOM);
 
 
 
-        // document.add(header);
 
         document.add(jpg);
         document.add(paragraph);
         document.add(paragraph1);
-
-        //document.add(footer);
         document.add(footer1);
         document.add(details);
-         document.add(paragraph2);
+        document.add(paragraph2);
         document.close();
         pdfWriter.close();
 
