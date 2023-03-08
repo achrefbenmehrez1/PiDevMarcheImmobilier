@@ -1,4 +1,5 @@
 package tn.esprit.realestate.Config;
+
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,11 +30,11 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers( "/auth/**")
+                .requestMatchers("/auth/**")
                 .permitAll()
                 .requestMatchers("/users/**")
                 .hasAnyAuthority("ADMIN")
-                .requestMatchers("/account/**", "/posts/**", "/comments/**", "/replies/**", "/reactions/**")
+                .requestMatchers("/account/**", "/comments/**", "/replies/**", "/reactions/**")
                 .authenticated()
                 .requestMatchers("/posts/**")
                 .permitAll()
@@ -46,10 +47,8 @@ public class SecurityConfiguration {
                 .logout()
                 .logoutUrl("/auth/logout")
                 .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-        ;
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
 
         return http.build();
     }
 }
-

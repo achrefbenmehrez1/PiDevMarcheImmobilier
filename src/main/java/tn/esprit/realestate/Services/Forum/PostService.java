@@ -2,10 +2,6 @@ package tn.esprit.realestate.Services.Forum;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.mail.Email;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +13,21 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.detectlanguage.DetectLanguage;
-import com.detectlanguage.Result;
 import com.detectlanguage.errors.APIError;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 
 import tn.esprit.realestate.Config.JwtService;
+import tn.esprit.realestate.Config.TranslatorText;
 import tn.esprit.realestate.Dto.Forum.PostDto;
 import tn.esprit.realestate.Entities.Forum.Attachment;
 import tn.esprit.realestate.Entities.Forum.Post;
 import tn.esprit.realestate.Entities.Forum.Tag;
+import tn.esprit.realestate.Entities.Forum.Translation;
+import tn.esprit.realestate.Entities.Forum.TranslationResponse;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Forum.IPostService;
 import tn.esprit.realestate.Repositories.Forum.AttachmentRepository;
@@ -73,8 +73,32 @@ public class PostService implements IPostService {
      */
 
     @Override
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<Post> getAllPosts(String translateTo) {
+        List<Post> posts = postRepository.findAll();
+        if (translateTo != null) {
+            posts = posts.stream().map(post -> {
+                TranslatorText translateRequest = new TranslatorText();
+                try {
+                    String res = translateRequest.Post(post.getContent(), translateTo);
+                    String trimmedJsonString = res.substring(1, res.length() - 1);
+
+                    // create ObjectMapper instance
+                    ObjectMapper objectMapper = new ObjectMapper();
+
+                    // read customer.json file into a tree model
+                    JsonNode rootNode = objectMapper.readTree(trimmedJsonString);
+                    post.setContent(rootNode.path("translations").get(0).path("text").asText());
+
+                    return post;
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    return null;
+                }
+            }).filter(Objects::nonNull).collect(Collectors.toList());
+        }
+
+        return posts;
     }
 
     @Override

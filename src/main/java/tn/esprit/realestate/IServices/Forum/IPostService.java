@@ -1,6 +1,8 @@
 package tn.esprit.realestate.IServices.Forum;
 
 import jakarta.mail.MessagingException;
+
+import org.apache.commons.mail.EmailException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPostService {
-        public List<Post> getAllPosts();
+        public List<Post> getAllPosts(String translateTo);
 
         public Post getPostById(Long id);
 
@@ -24,7 +26,7 @@ public interface IPostService {
 
         ResponseEntity<String> createPost(Optional<MultipartFile> file, String title, String content,
                         List<String> tagNames)
-                        throws IOException, MessagingException, GeoIp2Exception, APIError;
+                        throws IOException, MessagingException, GeoIp2Exception, APIError, EmailException;
 
         public Post updatePost(Long id, Optional<MultipartFile> file, Optional<String> title, Optional<String> content,
                         Optional<List<String>> tagNames) throws IOException;

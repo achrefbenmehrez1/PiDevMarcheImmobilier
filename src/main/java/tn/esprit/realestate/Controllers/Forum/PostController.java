@@ -2,6 +2,8 @@ package tn.esprit.realestate.Controllers.Forum;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.server.PathParam;
+import lombok.Builder.Default;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
@@ -47,40 +49,6 @@ public class PostController {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private HttpServletRequest request;
-
-    @GetMapping("/user/ip")
-    public String getUserIp(HttpServletRequest request) throws UnknownHostException {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null) {
-            ip = request.getRemoteAddr();
-        }
-
-        InetAddress inetAddress = InetAddress.getByName(ip);
-        String ipAddress = inetAddress.getHostAddress();
-
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://ip-api.com/json/" + ipAddress;
-        String result = restTemplate.getForObject(url, String.class);
-        System.out.println(result);
-
-        return "Your IP address is: " + ipAddress;
-    }
-
-    @GetMapping("/send-email")
-    public String sendEmail() throws EmailException {
-        Email email = new SimpleEmail();
-        email.setHostName("smtp.gmail.com");
-        email.setSmtpPort(587);
-        email.setAuthenticator(new DefaultAuthenticator("achref.benmehrez@esprit.tn", "213JMT6076"));
-        email.setFrom("achref.benmehrez@esprit.tn");
-        email.setSubject("TestMail");
-        email.setMsg("This is a test mail ... :-)");
-        email.addTo("achref.benmehrez@esprit.tn");
-        email.send();
-        return "Email sent successfully";
-    }
 
     @PostMapping("")
     public ResponseEntity<?> createPost(@RequestParam("file") Optional<MultipartFile> file,
@@ -154,8 +122,8 @@ public class PostController {
     }
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public List<Post> getAllPosts(@RequestParam(defaultValue = "en") String translateTo) {
+        return postService.getAllPosts(translateTo);
     }
 
     @GetMapping("/{id}")
