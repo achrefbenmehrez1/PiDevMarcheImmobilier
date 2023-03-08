@@ -59,9 +59,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Token> tokens;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Agency agency;
 
     public User(String email, String password, Role role, String username, String address, String phone) {
         this.email = email;
