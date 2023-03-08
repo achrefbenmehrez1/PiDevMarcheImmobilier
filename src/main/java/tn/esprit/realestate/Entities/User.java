@@ -1,21 +1,21 @@
 package tn.esprit.realestate.Entities;
 
 
-import java.util.List;
+        import java.util.List;
 
-import jakarta.persistence.*;
+        import com.fasterxml.jackson.annotation.JsonIgnore;
+        import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+        import jakarta.persistence.*;
 
-import java.util.Collection;
+        import java.util.Collection;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.multipart.MultipartFile;
-import tn.esprit.realestate.Security.Token;
+        import jakarta.validation.constraints.Email;
+        import lombok.*;
+        import org.springframework.security.core.GrantedAuthority;
+        import org.springframework.security.core.authority.SimpleGrantedAuthority;
+        import org.springframework.security.core.userdetails.UserDetails;
+        import org.springframework.web.multipart.MultipartFile;
+        import tn.esprit.realestate.Security.Token;
 
 @Data
 @Builder
@@ -23,39 +23,60 @@ import tn.esprit.realestate.Security.Token;
 @AllArgsConstructor
 @Entity
 @Table
+@ToString
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String firstname;
-    @Column(nullable = false)
-    private String lastname;
+    @Column(nullable = false,unique=true)
+    private String username;
+
     @Column(nullable = true)
     private String address;
 
-    @Column(nullable = true)
+    @Column(unique=true,nullable = true)
     private String phone;
 
 
     @Transient
     private MultipartFile profileImage;
-@Column
+    @Column
     private String profileImagePath;
+    @Email
     @Column(unique=true)
     private String email;
+    @JsonIgnore
+    @Column
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(nullable = false)
+    private boolean premium = false;
 
-    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Token> tokens;
 
-    @ManyToOne
-    private Agency agency;
 
+    public User(String email, String password, Role role, String username, String address, String phone) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.username = username;
+
+        this.address = address;
+        this.phone = phone;
+    }
+
+    public User(String username, String email, Role user) {
+        this.username = username;
+        this.email = email;
+        this.role = user;
+    }
+
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -68,24 +89,26 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
+    @JsonIgnore
     @Override
+
     public boolean isAccountNonExpired() {
         return true;
     }
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;

@@ -1,4 +1,4 @@
-package tn.esprit.realestate.auth;
+package tn.esprit.realestate.Dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationRequest {
 
-    private String email;
+    private String username;
     private String password;
 }

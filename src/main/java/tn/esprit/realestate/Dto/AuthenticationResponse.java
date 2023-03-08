@@ -1,4 +1,4 @@
-package tn.esprit.realestate.auth;
+package tn.esprit.realestate.Dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

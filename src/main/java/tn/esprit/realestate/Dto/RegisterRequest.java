@@ -1,4 +1,5 @@
-package tn.esprit.realestate.auth;
+package tn.esprit.realestate.Dto;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
 
-    private String firstname;
-    private String lastname;
+    private String username;
+    private String phone;
+    @Email
     private String email;
     private String password;
 }

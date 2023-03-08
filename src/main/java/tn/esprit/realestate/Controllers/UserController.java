@@ -1,14 +1,19 @@
 package tn.esprit.realestate.Controllers;
 
+import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
-import tn.esprit.realestate.Services.Appointment.User.UserService;
+import tn.esprit.realestate.Services.User.UserService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -31,9 +36,10 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<User> createUser(@RequestBody User user,@RequestParam(required = false,value="file") MultipartFile profileImage) throws IOException {
-        User createdUser = userService.createUser(user,profileImage);
+    @PostMapping(value="/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    public ResponseEntity<User> createUser(@Valid @RequestParam String email, @RequestParam String password, @RequestParam Role role, @RequestParam(required = false) String username, @RequestParam(required = false) String address, @RequestParam(required = false) String phone, @RequestParam(required = false,value="file") MultipartFile profileImage) throws IOException {
+        User createdUser = userService.createUser(email,password,role,username,address,phone,profileImage);
         return ResponseEntity.created(
                         ServletUriComponentsBuilder.fromCurrentRequest()
                                 .path("/{id}")
@@ -42,10 +48,11 @@ public class UserController {
                 .body(createdUser);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user,@RequestBody(required = false) MultipartFile profileImage) throws IOException {
+    @PutMapping(value="/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> updateUser(@Valid @PathVariable Long id, @RequestParam Optional<String> email, @RequestParam Optional<String> password, @RequestParam Optional<Role> role, @RequestParam Optional<String> username, @RequestParam Optional<String> address, @RequestParam Optional<String> phone, @RequestParam Optional< MultipartFile> profileImage) throws IOException {
 
-        User updatedUser = userService.updateUser(user,profileImage);
+        User updatedUser = userService.updateUser(id,email,password,role,username,address,phone,profileImage);
+
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -53,6 +60,20 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping(value ="/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String storeProfileImage(@RequestParam MultipartFile profileImage) throws IOException {
+        return profileImage.getOriginalFilename();
+    }
+    @GetMapping("/search")
+    public List<User> getusers(@RequestParam(value="role",required = false) Role role,
+                                      @RequestParam(value="email",required = false) String email,
+                                      @RequestParam(value="username",required = false) String username,
+                                      @RequestParam(value="lastname",required = false) String lastname,
+                                      @RequestParam(value="address",required = false) String address,
+                                      @RequestParam(value="phone",required = false) String phone){
+
+        return userService.getusers(role,email,username,lastname,address,phone);
     }
 }
 
