@@ -50,6 +50,7 @@ public class AdvertisementAspect {
     TemplateEngine templateEngine;
 
     @AfterReturning(pointcut = "execution(* tn.esprit.realestate.Services.Advertisement.AdvertisementService.updateAdvertisement(..))", returning = "result")
+
     public void sendEmailAfterAdvertisementUpdate(JoinPoint joinPoint, Object result) throws MessagingException {
         Advertisement updatedAd = (Advertisement) result;
 
@@ -58,7 +59,7 @@ public class AdvertisementAspect {
         //check if the ad has likes :
         boolean isFavorite = favoriteAdRepository.existsByAdvertisement(updatedAd);
 
-        if (isFavorite && updatedAd.getPrice() != null) {
+        if (isFavorite && updatedAd.getPrice() != null && updatedAd.getPrice()<updatedAd.getOldPrice()) {
             List<User> users=advertisementService.consultingFavorite(request,updatedAd.getId());
            sendEmail(users, updatedAd);
         }
