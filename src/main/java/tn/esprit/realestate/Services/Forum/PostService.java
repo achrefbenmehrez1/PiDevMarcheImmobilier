@@ -2,6 +2,10 @@ package tn.esprit.realestate.Services.Forum;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -128,26 +132,26 @@ public class PostService implements IPostService {
                 || tagNames.stream().anyMatch(ProfanityFilter::isProfanity)) {
             post.setFlagged(true);
         }
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null) {
-            ip = request.getRemoteAddr();
-        }
 
-        String dbLocation = "src/main/resources/static/GeoLite2-City.mmdb";
-
-        File database = new File(dbLocation);
-
-        DatabaseReader dbReader = new DatabaseReader.Builder(database)
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://api.ipstack.com/check?access_key=c0b9e10374bb43a4ad75dc161326cee2")
+                .get()
                 .build();
 
-        InetAddress ipAddress = InetAddress.getByName(ip);
-        CityResponse response = dbReader.city(ipAddress);
+        Response response = client.newCall(request).execute();
+        String res = response.body().string();
+        // create ObjectMapper instance
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        post.setLatitude(response.getLocation().getLatitude());
-        post.setLongitude(response.getLocation().getLongitude());
-        post.setCountry(response.getCountry().getName());
-        post.setCity(response.getCity().getName());
-        post.setState(response.getLeastSpecificSubdivision().getName());
+        // read customer.json file into a tree model
+        JsonNode rootNode = objectMapper.readTree(res);
+        post.setLongitude(rootNode.path("longitude").asDouble());
+        post.setLatitude(rootNode.path("latitude").asDouble());
+        post.setCountry(rootNode.path("country").asText());
+        post.setCity(rootNode.path("city").asText());
+        post.setZip(rootNode.path("zip").asInt());
+        post.setCountry(rootNode.path("country").asText());
 
         DetectLanguage.apiKey = "10b6d005b806a6496c79c340c1c2d4c7";
         String language = DetectLanguage.simpleDetect(content);

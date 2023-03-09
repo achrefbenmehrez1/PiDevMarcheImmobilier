@@ -74,7 +74,7 @@ public class Post {
     private String city;
 
     @Column
-    private String state;
+    private int zip;
 
     @Column
     private String language;
