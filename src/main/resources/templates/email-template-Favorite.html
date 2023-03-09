@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>My Email Template</title>
+  <style th:inline="text">
+    /* Add your styles here */
+    header {
+      background-color: darkred;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    footer {
+      background-color: darkred;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      padding: 0 10px;
+    }
+
+    body {
+      background-color: white;
+      color: black;
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    p:first-of-type {
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+
+
+  </style>
+
+</head>
+<body>
+<header>
+
+
+  <img src="https://gateway.pinata.cloud/ipfs/QmYMm4HQjRVafSyKDCudnyXNN8xsLGw1aj5LshaQzAHiyW?_gl=1*1i7xee3*_ga*MTgwMjQxOTU3Mi4xNjc4Mjg4Njcy*_ga_5RMPXG14TE*MTY3ODI4ODY3Mi4xLjEuMTY3ODI4ODc3My4zNC4wLjA&fbclid=IwAR3OoFU65Lyt7GOOKz2TAgVY9H3xba-oxioavtpTiSC3Owy6kXRViKJw3bY" alt="Logo"/>
+
+
+  <h1 style="text-align: center;margin-top: 5px;font-weight: bold; color:white">Vendor : To each their home</h1>
+</header>
+
+<div style="padding: 20px;">
+  <p style="font-size: 18px;">Dear <span th:text="${ownerName}" style="font-weight: bold;"></span>,</p>
+  <p style="font-size: 16px;,font-weight: bold;"> The price of one of your favorite Ad <span th:text="${ad_title}"></span> has been updated</p>
+  <p style="font-size: 16px;"><span th:text="${old_price}"></span> ---> <span th:text="${new_price}"></span></p>
+</div>
+<footer style="background-color: darkred;">
+  <p style="margin: 0; color: white;">© 2023 To Each Their Home. All rights reserved.</p><br>
+  <p style="margin: 0; color: white; font-size: 12px;">This email was sent to <span th:text="${ownerName}" style="font-weight: bold;"></span>.</p>
+</footer>
+</body>
+</html>
