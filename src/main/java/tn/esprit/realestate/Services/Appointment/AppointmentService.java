@@ -17,6 +17,8 @@ import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Appointment.IAppointmentService;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
+import tn.esprit.realestate.Entities.Property;
+import tn.esprit.realestate.Repositories.PropertyRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 
 
