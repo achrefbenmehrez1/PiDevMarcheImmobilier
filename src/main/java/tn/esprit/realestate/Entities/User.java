@@ -38,7 +38,6 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private String phone;
 
-
     @Transient
     private MultipartFile profileImage;
     @Column
@@ -55,6 +54,9 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Token> tokens;
+
+    @Column
+    private boolean premium = false;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

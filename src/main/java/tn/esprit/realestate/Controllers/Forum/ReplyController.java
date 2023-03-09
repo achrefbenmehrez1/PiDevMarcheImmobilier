@@ -34,16 +34,14 @@ public class ReplyController {
 
     @PostMapping
     public ResponseEntity<String> createReply(@RequestParam("file") Optional<MultipartFile> file,
-            @RequestParam("content") String content,
-            @RequestParam("authorId") Long authorId) throws MessagingException, EmailException {
-        return replyService.createReply(file, content, authorId);
+            @RequestParam("content") String content, @RequestParam("commentId") Long commentId) throws MessagingException, EmailException {
+        return replyService.createReply(file, content, commentId);
     }
 
     @PutMapping("/{id}")
     public Reply updateReply(@PathVariable Long id, @RequestParam("file") Optional<MultipartFile> file,
-            @RequestParam("content") Optional<String> content,
-            @RequestParam("authorId") Optional<Long> authorId) {
-        return replyService.updateReply(id, file, content, authorId);
+            @RequestParam("content") Optional<String> content) {
+        return replyService.updateReply(id, file, content);
     }
 
     @DeleteMapping("/{id}")

@@ -16,7 +16,7 @@ public interface ICommentService {
 
     public Comment getCommentById(Long id);
 
-    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException;
+    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long postId) throws MessagingException;
 
     public Comment updateComment(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId);
 

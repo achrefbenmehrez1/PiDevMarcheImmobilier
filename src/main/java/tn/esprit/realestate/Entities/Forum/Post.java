@@ -48,11 +48,11 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("post")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "post" })
     private List<Reaction> reactions = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("post")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "post" })
     private List<Tag> tags = new ArrayList<>();
 
     @OneToOne(mappedBy = "post")

@@ -1,9 +1,9 @@
 package tn.esprit.realestate.Services.Appointment;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,7 +16,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendMeetingLink(String to, String subject, String meetingLink) throws MessagingException {
+    public void sendMeetingLink(String to, String subject, String meetingLink) throws MessagingException, jakarta.mail.MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 

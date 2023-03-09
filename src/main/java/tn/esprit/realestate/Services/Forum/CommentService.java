@@ -3,6 +3,7 @@ package tn.esprit.realestate.Services.Forum;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -16,6 +17,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.realestate.Config.JwtService;
 import tn.esprit.realestate.Entities.Forum.*;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.IServices.Forum.ICommentService;
@@ -46,6 +48,10 @@ public class CommentService implements ICommentService {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private Environment env;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private HttpServletRequest request;
 
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
@@ -60,29 +66,34 @@ public class CommentService implements ICommentService {
         }
     }
 
-    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long authorId)
+    public ResponseEntity<String> createComment(Optional<MultipartFile> file, String content, Long postId)
             throws MessagingException {
         Comment comment = new Comment();
         comment.setContent(content);
 
-        Post post = new Post();
-        User author = userRepository.findById(authorId).orElse(null);
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
+        User author = userRepository.findByEmail(userEmail).orElse(null);
         if (author == null) {
             return ResponseEntity.badRequest().body("Author not found");
         }
         if (ProfanityFilter.isProfanity(content)) {
-            post.setFlagged(true);
+            comment.setFlagged(true);
         }
 
-        post.setCreatedAt(LocalDateTime.now());
-        post.setAuthor(author);
+        comment.setPost(postRepository.findById(postId).get());
+        comment.setCreatedAt(LocalDateTime.now());
+        comment.setAuthor(author);
 
         // Save the attachment if it exists
         if (file.isPresent()) {
             String filename = StringUtils.cleanPath(file.get().getOriginalFilename());
             Attachment attachment = new Attachment();
             attachment.setName(filename);
-            attachment.setPost(post);
+            attachment.setComment(comment);
             attachment.setAttachmentType(file.get().getContentType());
             attachment.setCreatedAt(LocalDateTime.now());
 
@@ -93,7 +104,7 @@ public class CommentService implements ICommentService {
             attachment.setAttachmentLink(attachmentLink);
             attachmentRepository.save(attachment);
 
-            post.setAttachment(attachment);
+            comment.setAttachment(attachment);
         }
 
         MimeMessage message = javaMailSender.createMimeMessage();

@@ -58,8 +58,8 @@ public class AppointmentController {
     }
 
     @PostMapping("/{properyId}/{agentId}/{clientId}")
-    public ResponseEntity<String> addAppointment(@RequestBody Appointment appointment, @PathVariable long propertyId, @PathVariable long agentId, @PathVariable long clientId) {
-        return appointmentService.addAppointment(appointment, propertyId, agentId, clientId);
+    public ResponseEntity<String> addAppointment(@RequestBody Appointment appointment, @PathVariable long agentId, @PathVariable long clientId) throws MessagingException, IOException, GeoIp2Exception {
+        return appointmentService.addAppointment(appointment, agentId, clientId);
     }
 
 
@@ -70,7 +70,7 @@ public class AppointmentController {
         try {
             emailService.sendMeetingLink(email, subject, meetingLink);
             return "Meeting link sent successfully to " + email;
-        } catch (javax.mail.MessagingException e) {
+        } catch (javax.mail.MessagingException | jakarta.mail.MessagingException e) {
             return "Error sending meeting link to " + email;
         }
     }

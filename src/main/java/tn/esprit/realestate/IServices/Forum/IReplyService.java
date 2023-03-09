@@ -15,9 +15,9 @@ public interface IReplyService {
 
     public Reply getReplyById(Long id);
 
-    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long authorId) throws MessagingException;
+    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long commentId) throws MessagingException;
 
-    public Reply updateReply(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId);
+    public Reply updateReply(Long id, Optional<MultipartFile> file, Optional<String> content);
 
     public void deleteReply(Long id);
 

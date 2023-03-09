@@ -2,6 +2,7 @@ package tn.esprit.realestate.Services.Forum;
 
 import jakarta.mail.MessagingException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -15,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.realestate.Config.JwtService;
 import tn.esprit.realestate.Entities.Forum.Attachment;
 import tn.esprit.realestate.Entities.Forum.Reply;
 import tn.esprit.realestate.Entities.User;
@@ -43,6 +45,12 @@ public class ReplyService implements IReplyService {
     private AttachmentRepository attachmentRepository;
     @Autowired
     private Environment env;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public List<Reply> getAllReplies() {
         return replyRepository.findAll();
@@ -57,12 +65,18 @@ public class ReplyService implements IReplyService {
         }
     }
 
-    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long authorId)
+    public ResponseEntity<String> createReply(Optional<MultipartFile> file, String content, Long commentId)
             throws MessagingException {
         Reply reply = new Reply();
         reply.setContent(content);
+        reply.setComment(commentRepository.findById(commentId).get());
 
-        User author = userRepository.findById(authorId).orElse(null);
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
+        User author = userRepository.findByEmail(userEmail).orElse(null);
         if (author == null) {
             return ResponseEntity.badRequest().body("Author not found");
         }
@@ -110,17 +124,19 @@ public class ReplyService implements IReplyService {
         return ResponseEntity.ok("Reply created successfully");
     }
 
-    public Reply updateReply(Long id, Optional<MultipartFile> file, Optional<String> content, Optional<Long> authorId) {
+    public Reply updateReply(Long id, Optional<MultipartFile> file, Optional<String> content) {
         Reply reply = getReplyById(id);
         if (content.isPresent()) {
             reply.setContent(content.get());
         }
-        if (authorId.isPresent()) {
-            User author = userRepository.findById(authorId.get()).orElse(null);
-            if (author == null) {
-                return null;
-            }
-            reply.setAuthor(author);
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+        jwt = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwt);
+        User author = userRepository.findByEmail(userEmail).orElse(null);
+        if (author == null) {
+            return null;
         }
         if (file.isPresent()) {
             String filename = StringUtils.cleanPath(file.get().getOriginalFilename());

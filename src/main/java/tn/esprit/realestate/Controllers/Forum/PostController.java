@@ -66,7 +66,7 @@ public class PostController {
     }
 
     @GetMapping("/unapproved")
-    public ResponseEntity<List<PostDto>> getUnapprovedPosts() {
+    public ResponseEntity<List<PostDto>>    getUnapprovedPosts() {
         List<PostDto> unapprovedPosts = postService.getUnapprovedPosts();
         return ResponseEntity.ok(unapprovedPosts);
     }

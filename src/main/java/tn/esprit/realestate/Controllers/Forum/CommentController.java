@@ -28,9 +28,8 @@ public class CommentController {
 
     @PostMapping("")
     public ResponseEntity<?> createComment(@RequestParam("file") Optional<MultipartFile> file,
-            @RequestParam("content") String content,
-            @RequestParam("authorId") Long authorId) throws jakarta.mail.MessagingException, EmailException {
-        return commentService.createComment(file, content, authorId);
+            @RequestParam("content") String content, @RequestParam Long postId) throws jakarta.mail.MessagingException, EmailException {
+        return commentService.createComment(file, content, postId);
     }
 
     @PutMapping("/{id}")
