@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MarcheImmobilierApplication<MarcheImmobilier>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "tn.esprit.realestate.MarcheImmobilierApplication",
+            "projectName": "MarcheImmobilier",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
