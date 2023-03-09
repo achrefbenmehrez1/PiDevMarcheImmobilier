@@ -1,8 +1,17 @@
 package tn.esprit.realestate.Services.Appointment;
 
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.maxmind.geoip2.model.CityResponse;
+import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import tn.esprit.realestate.Entities.Appointment;
 import tn.esprit.realestate.Entities.User;
@@ -10,6 +19,11 @@ import tn.esprit.realestate.IServices.Appointment.IAppointmentService;
 import tn.esprit.realestate.Repositories.AppointmentRepository;
 import tn.esprit.realestate.Repositories.UserRepository;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +33,9 @@ public class AppointmentService implements IAppointmentService {
     private static final String BASE_URL = "https://meet.google.com/new";
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
+ @Autowired
+ private HttpServletRequest request;
+
 
     @Override
     public Appointment updateAppointment(Appointment appointment) {
@@ -65,15 +82,43 @@ public class AppointmentService implements IAppointmentService {
     }
 
     @Override
-    public ResponseEntity<String> addAppointment(Appointment appointment, long agentId, long clientId) {
+    public ResponseEntity<String> addAppointment(Appointment appointment, long agentId, long clientId) throws IOException, GeoIp2Exception {
         User agent = userRepository.findById(agentId).orElse(null);
         User client = userRepository.findById(clientId).orElse(null);
 
         appointment.setAgent(agent);
         appointment.setClient(client);
 
+
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null) {
+            ip = request.getRemoteAddr();
+        }
+
+        String dbLocation = "C:\\Users\\ahmed\\OneDrive\\Bureau\\PiDevMarcheImmobilier 2 3\\PiDevMarcheImmobilier 2\\PiDevMarcheImmobilier\\src\\main\\resources\\static\\GeoLite2-City.mmdb";
+
+        File database = new File(dbLocation);
+
+        DatabaseReader dbReader = new DatabaseReader.Builder(database)
+                .build();
+
+        InetAddress ipAddress = InetAddress.getByName(ip);
+        CityResponse response = dbReader.city(ipAddress);
+
+        Double latitude = response.getLocation().getLatitude();
+        Double longitude = response.getLocation().getLongitude();
+        String country = response.getCountry().getName();
+        String city = response.getCity().getName();
+        String state = response.getLeastSpecificSubdivision().getName();
+
+        System.out.println(latitude);
+        System.out.println(longitude);
+        System.out.println(country);
+
+
         appointmentRepository.save(appointment);
         return new ResponseEntity<>("Appointment added successfully", HttpStatus.OK);
+
     }
 
     @Override
@@ -81,4 +126,7 @@ public class AppointmentService implements IAppointmentService {
         String meetingId = UUID.randomUUID().toString();
         return String.format("%s/%s?authuser=0&hs=122&hcb=%s", BASE_URL, meetingId, appointment.getId());
     }
+
+
+
 }
