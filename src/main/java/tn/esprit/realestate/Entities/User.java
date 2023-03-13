@@ -1,21 +1,17 @@
 package tn.esprit.realestate.Entities;
 
 
-        import java.util.ArrayList;
-        import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.realestate.Security.Token;
 
-        import com.fasterxml.jackson.annotation.JsonIgnore;
-        import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-        import jakarta.persistence.*;
-
-        import java.util.Collection;
-
-        import lombok.*;
-        import org.springframework.security.core.GrantedAuthority;
-        import org.springframework.security.core.authority.SimpleGrantedAuthority;
-        import org.springframework.security.core.userdetails.UserDetails;
-        import org.springframework.web.multipart.MultipartFile;
-        import tn.esprit.realestate.Security.Token;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder

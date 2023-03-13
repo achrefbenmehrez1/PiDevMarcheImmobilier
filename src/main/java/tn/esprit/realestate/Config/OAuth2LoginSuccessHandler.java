@@ -10,10 +10,8 @@ import org.springframework.stereotype.Component;
 import tn.esprit.realestate.Entities.Role;
 import tn.esprit.realestate.Entities.User;
 import tn.esprit.realestate.Repositories.UserRepository;
-import tn.esprit.realestate.Services.User.UserService;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -32,7 +30,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
             newUser.setEmail(email);
             newUser.setUsername(oauth2User.getName());
             newUser.setRole(Role.USER);
-            ;
             userService.save(newUser);
             System.out.println("adding user to database");
         }else {
